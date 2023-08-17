@@ -1,3 +1,5 @@
+# show example of google for one ticker
+
 import yfinance as yf
 
 goog = yf.Ticker("GOOG")
@@ -33,20 +35,20 @@ goog.quarterly_cashflow
 # see `Ticker.get_income_stmt()` for more options
 
 # show holders
-msft.major_holders
-msft.institutional_holders
-msft.mutualfund_holders
+goog.major_holders
+goog.institutional_holders
+goog.mutualfund_holders
 
 # Show future and historic earnings dates, returns at most next 4 quarters and last 8 quarters by default. 
-# Note: If more are needed use msft.get_earnings_dates(limit=XX) with increased limit argument.
-msft.earnings_dates
+# Note: If more are needed use goog.get_earnings_dates(limit=XX) with increased limit argument.
+goog.earnings_dates
 
 # show ISIN code - *experimental*
 # ISIN = International Securities Identification Number
 goog.isin
 
 # show options expirations
-msft.options
+goog.options
 
 # show news
 goog.news
@@ -67,6 +69,7 @@ goog.get_cashflow(proxy="PROXY_SERVER")
 goog.option_chain(..., proxy="PROXY_SERVER")
 
 #initialize multiple tickers
+# show some info we can get for multiple tickers
 tickers = yf.Tickers('cvs tsla goog ms wmt')
 
 # access each ticker using (example)
