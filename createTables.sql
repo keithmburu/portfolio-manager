@@ -2,14 +2,15 @@ DROP DATABASE TAPHK;
 CREATE DATABASE TAPHK if not exists;
 USE TAPHK;
 
-CREATE TABLE porfolio (
+CREATE TABLE portfolio (
     id INT PRIMARY KEY auto_increment,
+    asset_type VARCHAR(255) NOT NULL,
     stock_ticker VARCHAR(20) NOT NULL,
     volume INT NOT NULL
 );
 
 
-CREATE TABLE stock_data (
+CREATE TABLE asset_data (
     id INT PRIMARY KEY auto_increment,
     stock_ticker VARCHAR(20) NOT NULL,
     date DATETIME NOT NULL,
@@ -19,3 +20,5 @@ CREATE TABLE stock_data (
     low_price FLOAT NOT NULL,
     volume INT NOT NULL
 );
+
+GRANT ALL PRIVILEGES ON TAPHK TO 'training'@'localhost';

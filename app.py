@@ -8,8 +8,10 @@ api = Api(app)
 
 db = mysql.connector.connect(
         host="localhost",
-        user="nora_training",
+        user="training",
         password="1234567A",
-        database="conygre"
+        database="TAPHK"
     )
+
+
 
