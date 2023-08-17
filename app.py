@@ -8,14 +8,14 @@ api = Api(app)
 
 db = mysql.connector.connect(
         host="localhost",
-        user="nora_training",
+        user="training",
         password="1234567A",
-        database="conygre"
     )
 
 class PortfolioResource(Resource):
     def get(self):
         cursor = db.cursor()
+        cursor.execute('''USE portfolio''')
         cursor.execute('''SELECT * FROM portfolio''')
         portfolio = cursor.fetchall()
         cursor.close()
@@ -29,6 +29,7 @@ class PortfolioResource(Resource):
         parser.add_argument("volume")
         args = parser.parse_args()
         cursor = db.cursor()
+        cursor.execute('''USE portfolio''')
         cursor.execute('''INSERT INTO portfolio VALUES (%s, %s, %s, %s)''', \
                         (args["asset_type"], args["stock_ticker"], args["company_name"], args["volume"]))
         db.commit()
@@ -36,7 +37,7 @@ class PortfolioResource(Resource):
         return {"message": "Added new asset to portfolio"}, 201
     
 
-api.add_resource('/', PortfolioResource)
+api.add_resource(PortfolioResource, '/')
 
 
 if __name__ == '__main__':
