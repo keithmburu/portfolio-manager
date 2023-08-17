@@ -143,9 +143,9 @@ class CashResource(Resource):
 
 
 class AssetResource(Resource):
-    def get(self, asset_id):
+    def get(self, asset_name):
         cursor = db.cursor()
-        cursor.execute('''SELECT * FROM asset_data WHERE id = %s''', (asset_id,))
+        cursor.execute('''SELECT * FROM asset_data WHERE asset_name = %s''', (asset_name,))
         timeseries = cursor.fetchall()
         cursor.close()
         return jsonify(timeseries)
@@ -155,7 +155,7 @@ api.add_resource(PortfolioResource, '/')
 api.add_resource(StocksResource, '/stocks')
 api.add_resource(BondsResource, '/bonds')
 api.add_resource(CashResource, '/cash')
-api.add_resource(AssetResource, '/asset/<int:asset_id>')
+api.add_resource(AssetResource, '/asset/<int:asset_name>')
 
 
 if __name__ == '__main__':
