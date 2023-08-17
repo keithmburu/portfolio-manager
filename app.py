@@ -31,7 +31,6 @@ class PortfolioResource(Resource):
         parser.add_argument("volume")
         args = parser.parse_args()
         cursor = db.cursor()
-        cursor.execute('''USE portfolio''')
         cursor.execute('''INSERT INTO portfolio VALUES (%s, %s, %s, %s)''', \
                         (args["asset_type"], args["stock_ticker"], args["company_name"], args["volume"]))
         db.commit()
@@ -43,7 +42,6 @@ class PortfolioResource(Resource):
         parser.add_argument("id")
         args = parser.parse_args()
         cursor = db.cursor()
-        cursor.execute('''USE portfolio''')
         cursor.execute('''DELETE FROM portfolio WHERE id = %s''', (args["id"],))
         db.commit()
         cursor.close()
@@ -53,7 +51,6 @@ class PortfolioResource(Resource):
 class StocksResource(Resource):
     def get(self):
         cursor = db.cursor()
-        cursor.execute('''USE portfolio''')
         cursor.execute('''SELECT * FROM portfolio WHERE asset_type = stock''')
         stocks = cursor.fetchall()
         cursor.close()
@@ -67,7 +64,6 @@ class StocksResource(Resource):
         parser.add_argument("volume")
         args = parser.parse_args()
         cursor = db.cursor()
-        cursor.execute('''USE portfolio''')
         cursor.execute('''INSERT INTO portfolio VALUES (%s, %s, %s, %s)''', \
                         (args["asset_type"], args["stock_ticker"], args["company_name"], args["volume"]))
         db.commit()
@@ -91,7 +87,6 @@ class BondsResource(Resource):
         parser.add_argument("volume")
         args = parser.parse_args()
         cursor = db.cursor()
-        cursor.execute('''USE portfolio''')
         cursor.execute('''INSERT INTO portfolio VALUES (%s, %s, %s, %s)''', \
                         (args["asset_type"], args["stock_ticker"], args["company_name"], args["volume"]))
         db.commit()
@@ -116,7 +111,6 @@ class CashResource(Resource):
         parser.add_argument("volume")
         args = parser.parse_args()
         cursor = db.cursor()
-        cursor.execute('''USE portfolio''')
         cursor.execute('''INSERT INTO portfolio VALUES (%s, %s, %s, %s)''', \
                         (args["asset_type"], args["stock_ticker"], args["company_name"], args["volume"]))
         db.commit()
@@ -141,17 +135,27 @@ class CashResource(Resource):
         parser.add_argument("volume")
         args = parser.parse_args()
         cursor = db.cursor()
-        cursor.execute('''USE portfolio''')
         cursor.execute('''INSERT INTO portfolio VALUES (%s, %s, %s, %s)''', \
                         (args["asset_type"], args["stock_ticker"], args["company_name"], args["volume"]))
         db.commit()
         cursor.close()
         return {"message": "Added new cash to portfolio"}, 201
 
+
+class AssetResource(Resource):
+    def get(self, asset_id):
+        cursor = db.cursor()
+        cursor.execute('''SELECT * FROM asset_data WHERE id = %s''', (asset_id,))
+        timeseries = cursor.fetchall()
+        cursor.close()
+        return jsonify(timeseries)
+
+    
 api.add_resource(PortfolioResource, '/')
 api.add_resource(StocksResource, '/stocks')
 api.add_resource(BondsResource, '/bonds')
 api.add_resource(CashResource, '/cash')
+api.add_resource(AssetResource, '/asset/<int:asset_id>')
 
 
 if __name__ == '__main__':
