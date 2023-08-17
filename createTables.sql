@@ -1,5 +1,5 @@
-DROP DATABASE TAPHK;
-CREATE DATABASE TAPHK if not exists;
+DROP DATABASE IF EXISTS TAPHK;
+CREATE DATABASE IF NOT EXISTS TAPHK;
 USE TAPHK;
 
 CREATE TABLE portfolio (
@@ -8,7 +8,7 @@ CREATE TABLE portfolio (
     stock_ticker VARCHAR(20) NOT NULL,
     company_name VARCHAR(255) NOT NULL,
     volume INT NOT NULL,
-    start_datetime DATETIME NOT NULL,
+    start_datetime DATETIME NOT NULL
 );
 
 
@@ -24,4 +24,5 @@ CREATE TABLE asset_data (
     volume INT NOT NULL
 );
 
+CREATE USER 'training'@'localhost' IDENTIFIED BY '1234567A';
 GRANT ALL PRIVILEGES ON TAPHK TO 'training'@'localhost';
