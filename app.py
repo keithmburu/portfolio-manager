@@ -12,6 +12,7 @@ db = mysql.connector.connect(
         password="1234567A",
     )
 
+
 class PortfolioResource(Resource):
     def get(self):
         cursor = db.cursor()
@@ -35,9 +36,88 @@ class PortfolioResource(Resource):
         db.commit()
         cursor.close()
         return {"message": "Added new asset to portfolio"}, 201
-    
+
+
+class StocksResource(Resource):
+    def get(self):
+        cursor = db.cursor()
+        cursor.execute('''USE stocks''')
+        cursor.execute('''SELECT * FROM stocks''')
+        stocks = cursor.fetchall()
+        cursor.close()
+        return jsonify(stocks)
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("asset_type")
+        parser.add_argument("stock_ticker")
+        parser.add_argument("company_name")
+        parser.add_argument("volume")
+        args = parser.parse_args()
+        cursor = db.cursor()
+        cursor.execute('''USE stocks''')
+        cursor.execute('''INSERT INTO stocks VALUES (%s, %s, %s, %s)''', \
+                        (args["asset_type"], args["stock_ticker"], args["company_name"], args["volume"]))
+        db.commit()
+        cursor.close()
+        return {"message": "Added new asset to stocks"}, 201
+
+
+class BondsResource(Resource):
+    def get(self):
+        cursor = db.cursor()
+        cursor.execute('''USE bonds''')
+        cursor.execute('''SELECT * FROM bonds''')
+        bonds = cursor.fetchall()
+        cursor.close()
+        return jsonify(bonds)
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("asset_type")
+        parser.add_argument("stock_ticker")
+        parser.add_argument("company_name")
+        parser.add_argument("volume")
+        args = parser.parse_args()
+        cursor = db.cursor()
+        cursor.execute('''USE bonds''')
+        cursor.execute('''INSERT INTO bonds VALUES (%s, %s, %s, %s)''', \
+                        (args["asset_type"], args["stock_ticker"], args["company_name"], args["volume"]))
+        db.commit()
+        cursor.close()
+        return {"message": "Added new asset to bonds"}, 201
+
+
+class CashResource(Resource):
+    def get(self):
+        cursor = db.cursor()
+        cursor.execute('''USE cash''')
+        cursor.execute('''SELECT * FROM cash''')
+        cash = cursor.fetchall()
+        cursor.close()
+        return jsonify(cash)
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("asset_type")
+        parser.add_argument("stock_ticker")
+        parser.add_argument("company_name")
+        parser.add_argument("volume")
+        args = parser.parse_args()
+        cursor = db.cursor()
+        cursor.execute('''USE cash''')
+        cursor.execute('''INSERT INTO cash VALUES (%s, %s, %s, %s)''', \
+                        (args["asset_type"], args["stock_ticker"], args["company_name"], args["volume"]))
+        db.commit()
+        cursor.close()
+        return {"message": "Added new asset to cash"}, 201
+
 
 api.add_resource(PortfolioResource, '/')
+api.add_resource(StocksResource, '/stocks')
+api.add_resource(BondsResource, '/bonds')
+api.add_resource(CashResource, '/cash')
+
 
 
 if __name__ == '__main__':
