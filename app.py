@@ -37,16 +37,6 @@ class PortfolioResource(Resource):
         cursor.close()
         return {"message": "Added new asset to portfolio"}, 201
 
-    def delete(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument("id")
-        args = parser.parse_args()
-        cursor = db.cursor()
-        cursor.execute('''DELETE FROM portfolio WHERE id = %s''', (args["id"],))
-        db.commit()
-        cursor.close()
-        return {"message": "Removed asset from portfolio"}, 200
-
 
 class StocksResource(Resource):
     def get(self):
@@ -149,6 +139,17 @@ class AssetResource(Resource):
         timeseries = cursor.fetchall()
         cursor.close()
         return jsonify(timeseries)
+
+    def delete(self, asset_name):
+        parser = reqparse.RequestParser()
+        parser.add_argument("asset_name")
+        args = parser.parse_args()
+        cursor = db.cursor()
+        cursor.execute('''DELETE FROM portfolio WHERE asset_name = %s''', (args["asset_name"],))
+        db.commit()
+        cursor.close()
+        return {"message": "Removed asset from portfolio"}, 200
+
 
     
 api.add_resource(PortfolioResource, '/')
