@@ -14,4 +14,17 @@ db = mysql.connector.connect(
     )
 
 
+class PortfolioResource(Resource):
+    def get(self):
+        cursor = db.cursor()
+        cursor.execute('''SELECT * FROM portfolio''')
+        portfolio = cursor.fetchall()
+        cursor.close()
+        return jsonify(portfolio)
 
+
+api.add_resource('/', PortfolioResource)
+
+
+if __name__ == '__main__':
+    app.run()
