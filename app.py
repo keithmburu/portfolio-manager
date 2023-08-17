@@ -12,6 +12,7 @@ db = mysql.connector.connect(
         password="1234567A",
     )
 
+
 class PortfolioResource(Resource):
     def get(self):
         cursor = db.cursor()
@@ -35,9 +36,9 @@ class PortfolioResource(Resource):
         db.commit()
         cursor.close()
         return {"message": "Added new asset to portfolio"}, 201
-    
 
 api.add_resource(PortfolioResource, '/')
+
 
 
 if __name__ == '__main__':
