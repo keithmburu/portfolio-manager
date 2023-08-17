@@ -7,10 +7,11 @@ CREATE TABLE portfolio (
     asset_type VARCHAR(255) NOT NULL,
     asset_ticker VARCHAR(20),
     asset_name VARCHAR(255) NOT NULL,
-    volume INT NOT NULL,
+    amount_holding INT NOT NULL,
     buy_datetime DATETIME NOT NULL,
     mature_datetime DATETIME,
     currency VARCHAR(255),
+    net_worth FLOAT NOT NULL
 );
 
 
