@@ -12,3 +12,4 @@ db = mysql.connector.connect(
         password="1234567A",
         database="conygre"
     )
+
