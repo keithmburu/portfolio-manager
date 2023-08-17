@@ -1,3 +1,4 @@
+import dateutil
 from flask import Flask, jsonify
 from flask_restful import Resource, Api, reqparse
 import mysql.connector
@@ -16,15 +17,6 @@ db = mysql.connector.connect(
 
 class PortfolioResource(Resource):
     # only for stock for now
-    def update_net_worth(self):
-        query = """
-        UPDATE portfolio P
-        JOIN (
-            SELECT P.asset_name,
-                    SUM
-        )
-        """
-        
     def get(self):
         cursor = db.cursor()
         cursor.execute('''SELECT * FROM portfolio''')
