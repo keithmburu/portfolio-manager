@@ -16,21 +16,30 @@ db = mysql.connector.connect(
     )
 
 class PortfolioResource(Resource):
+    # only for stock for now
+    def update_net_worth(self):
+        query = """
+        UPDATE portfolio P
+        JOIN (
+            SELECT P.asset_name,
+                    SUM
+        )
+        """
+        
     def get(self):
         cursor = db.cursor()
-        cursor.execute('''USE portfolio''')
-        cursor.execute('''SELECT * FROM portfolio''')
-        portfolio = cursor.fetchall()
-        cursor.close()
-        return jsonify(portfolio)
+        cursor.execute('''
+                       UPDATE portfolio P
+                       INNER JOIN 
+                       ''')
     
     # user add new item to the portfolio
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument("asset_type", required=True)
-        parser.add_argument("asset_ticker", required=True)
+        parser.add_argument("asset_ticker")
         parser.add_argument("asset_name", required=True)
-        parser.add_argument("volume", required=True, type=int)
+        parser.add_argument("amount_holding", required=True, type=int)
         parser.add_argument("buy_datetime", required=True)
         parser.add_argument("mature_datetime")
         parser.add_argument("currency")
@@ -39,7 +48,7 @@ class PortfolioResource(Resource):
         asset_type = args["asset_type"].upper()
         asset_ticker = args["asset_ticker"].upper()
         asset_name = args["asset_name"].upper()
-        volume = args["volume"]
+        amount_holding = args["amount_holding"]
         
         try:
             # Parse start_datetime using dateutil.parser
@@ -60,9 +69,9 @@ class PortfolioResource(Resource):
         
         cursor = db.cursor()
         cursor.execute('''INSERT INTO portfolio 
-                          (asset_type, asset_ticker, asset_name, volume, start_datetime, mature_datetime, currency)
+                          (asset_type, asset_ticker, asset_name, amount_holding, start_datetime, mature_datetime, currency)
                           VALUES (%s, %s, %s, %s, %s, %s, %s)''',
-                       (asset_type, asset_ticker, asset_name, volume, buy_datetime, mature_datetime,currency))
+                       (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime,currency))
 
         db.commit()
         cursor.close()
