@@ -1,35 +1,35 @@
 import yfinance as yf
 
-msft = yf.Ticker("MSFT")
+goog = yf.Ticker("GOOG")
 
 # get all stock info
-msft.info
+goog.info
 
 # get historical market data
-hist = msft.history(period="1mo")
+hist = goog.history(period="1mo")
 
 # show meta information about the history (requires history() to be called first)
-msft.history_metadata
+goog.history_metadata
 
 # show actions (dividends, splits, capital gains)
-msft.actions
-msft.dividends
-msft.splits
-msft.capital_gains  # only for mutual funds & etfs
+goog.actions
+goog.dividends
+goog.splits
+goog.capital_gains  # only for mutual funds & etfs
 
 # show share count
-msft.get_shares_full(start="2022-01-01", end=None)
+goog.get_shares_full(start="2022-01-01", end=None)
 
 # show financials:
 # - income statement
-msft.income_stmt
-msft.quarterly_income_stmt
+goog.income_stmt
+goog.quarterly_income_stmt
 # - balance sheet
-msft.balance_sheet
-msft.quarterly_balance_sheet
+goog.balance_sheet
+goog.quarterly_balance_sheet
 # - cash flow statement
-msft.cashflow
-msft.quarterly_cashflow
+goog.cashflow
+goog.quarterly_cashflow
 # see `Ticker.get_income_stmt()` for more options
 
 # show holders
@@ -43,34 +43,31 @@ msft.earnings_dates
 
 # show ISIN code - *experimental*
 # ISIN = International Securities Identification Number
-msft.isin
+goog.isin
 
 # show options expirations
 msft.options
 
 # show news
-msft.news
+goog.news
 
 # get option chain for specific expiration
-opt = msft.option_chain('YYYY-MM-DD')
+opt = goog.option_chain('YYYY-MM-DD')
 # data available via: opt.calls, opt.puts
 
 # download data
-import yfinance as yf
 
-msft = yf.Ticker("MSFT")
-
-msft.history(..., proxy="PROXY_SERVER")
-msft.get_actions(proxy="PROXY_SERVER")
-msft.get_dividends(proxy="PROXY_SERVER")
-msft.get_splits(proxy="PROXY_SERVER")
-msft.get_capital_gains(proxy="PROXY_SERVER")
-msft.get_balance_sheet(proxy="PROXY_SERVER")
-msft.get_cashflow(proxy="PROXY_SERVER")
-msft.option_chain(..., proxy="PROXY_SERVER")
+goog.history(..., proxy="PROXY_SERVER")
+goog.get_actions(proxy="PROXY_SERVER")
+goog.get_dividends(proxy="PROXY_SERVER")
+goog.get_splits(proxy="PROXY_SERVER")
+goog.get_capital_gains(proxy="PROXY_SERVER")
+goog.get_balance_sheet(proxy="PROXY_SERVER")
+goog.get_cashflow(proxy="PROXY_SERVER")
+goog.option_chain(..., proxy="PROXY_SERVER")
 
 #initialize multiple tickers
-tickers = yf.Tickers('msft aapl goog')
+tickers = yf.Tickers('cvs tsla goog ms wmt')
 
 # access each ticker using (example)
 # cvs
@@ -79,13 +76,13 @@ tickers.tickers['CVS'].history(period="1mo")
 tickers.tickers['CVS'].actions
 
 #tesla
-tickers.tickers['GOOG'].info
-tickers.tickers['GOOG'].history(period="1mo")
-tickers.tickers['GOOG'].actions
+tickers.tickers['TSLA'].info
+tickers.tickers['TSLA'].history(period="1mo")
+tickers.tickers['TSLA'].actions
 
 #GOOGLE
-tickers.tickers['CVS'].info
-tickers.tickers['AAPL'].history(period="1mo")
+tickers.tickers['GOOG'].info
+tickers.tickers['GOOG'].history(period="1mo")
 tickers.tickers['GOOG'].actions
 
 #MS
