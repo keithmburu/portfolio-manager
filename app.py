@@ -45,20 +45,6 @@ class StocksResource(Resource):
         cursor.close()
         return jsonify(stocks)
 
-    def post(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument("asset_type")
-        parser.add_argument("stock_ticker")
-        parser.add_argument("company_name")
-        parser.add_argument("amount_holding")
-        args = parser.parse_args()
-        cursor = db.cursor()
-        cursor.execute('''INSERT INTO portfolio VALUES (%s, %s, %s, %s)''', \
-                        (args["asset_type"], args["stock_ticker"], args["company_name"], args["amount_holding"]))
-        db.commit()
-        cursor.close()
-        return {"message": "Added new stock to portfolio"}, 201
-
 
 class BondsResource(Resource):
     def get(self):
@@ -68,20 +54,6 @@ class BondsResource(Resource):
         cursor.close()
         return jsonify(bonds)
 
-    def post(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument("asset_type")
-        parser.add_argument("stock_ticker")
-        parser.add_argument("company_name")
-        parser.add_argument("amount_holding")
-        args = parser.parse_args()
-        cursor = db.cursor()
-        cursor.execute('''INSERT INTO portfolio VALUES (%s, %s, %s, %s)''', \
-                        (args["asset_type"], args["stock_ticker"], args["company_name"], args["amount_holding"]))
-        db.commit()
-        cursor.close()
-        return {"message": "Added new bond to portfolio"}, 201
-
 
 class CashResource(Resource):
     def get(self):
@@ -90,43 +62,6 @@ class CashResource(Resource):
         cash = cursor.fetchall()
         cursor.close()
         return jsonify(cash)
-
-    def post(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument("asset_type")
-        parser.add_argument("stock_ticker")
-        parser.add_argument("company_name")
-        parser.add_argument("amount_holding")
-        args = parser.parse_args()
-        cursor = db.cursor()
-        cursor.execute('''INSERT INTO portfolio VALUES (%s, %s, %s, %s)''', \
-                        (args["asset_type"], args["stock_ticker"], args["company_name"], args["amount_holding"]))
-        db.commit()
-        cursor.close()
-        return {"message": "Added new cash to portfolio"}, 201
-
-
-class CashResource(Resource):
-    def get(self):
-        cursor = db.cursor()
-        cursor.execute('''SELECT * FROM portfolio WHERE asset_type = cash''')
-        cash = cursor.fetchall()
-        cursor.close()
-        return jsonify(cash)
-
-    def post(self):
-        parser = reqparse.RequestParser()
-        parser.add_argument("asset_type")
-        parser.add_argument("stock_ticker")
-        parser.add_argument("company_name")
-        parser.add_argument("amount_holding")
-        args = parser.parse_args()
-        cursor = db.cursor()
-        cursor.execute('''INSERT INTO portfolio VALUES (%s, %s, %s, %s)''', \
-                        (args["asset_type"], args["stock_ticker"], args["company_name"], args["amount_holding"]))
-        db.commit()
-        cursor.close()
-        return {"message": "Added new cash to portfolio"}, 201
 
 
 class AssetResource(Resource):
