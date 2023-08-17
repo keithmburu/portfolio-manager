@@ -38,6 +38,17 @@ class PortfolioResource(Resource):
         cursor.close()
         return {"message": "Added new asset to portfolio"}, 201
 
+    def delete(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument("id")
+        args = parser.parse_args()
+        cursor = db.cursor()
+        cursor.execute('''USE portfolio''')
+        cursor.execute('''DELETE FROM portfolio WHERE id = %s''', (args["id"],))
+        db.commit()
+        cursor.close()
+        return {"message": "Removed asset from portfolio"}, 200
+
 
 class StocksResource(Resource):
     def get(self):
