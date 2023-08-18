@@ -95,19 +95,19 @@ class CashResource(Resource):
 
 
 class AssetResource(Resource):
-    def get(self, asset_name):
+    def get(self, asset_id):
         cursor = db.cursor()
-        cursor.execute('''SELECT * FROM asset_data WHERE asset_name = %s''', (asset_name,))
-        timeseries = cursor.fetchall()
+        cursor.execute('''SELECT * FROM portfolio WHERE id = %s''', (asset_id,))
+        asset = cursor.fetchone()
         cursor.close()
-        return jsonify(timeseries)
+        return jsonify(asset)
 
-    def delete(self, asset_name):
+    def delete(self, asset_id):
         parser = reqparse.RequestParser()
-        parser.add_argument("asset_name")
+        parser.add_argument("asset_id")
         args = parser.parse_args()
         cursor = db.cursor()
-        cursor.execute('''DELETE FROM portfolio WHERE asset_name = %s''', (args["asset_name"],))
+        cursor.execute('''DELETE FROM portfolio WHERE id = %s''', (args["asset_id"],))
         db.commit()
         cursor.close()
         return {"message": "Removed asset from portfolio"}, 200
@@ -118,7 +118,7 @@ api.add_resource(PortfolioResource, '/')
 api.add_resource(StocksResource, '/stocks')
 api.add_resource(BondsResource, '/bonds')
 api.add_resource(CashResource, '/cash')
-api.add_resource(AssetResource, '/asset/<str:asset_name>')
+api.add_resource(AssetResource, '/<int:asset_id>')
 
 
 if __name__ == '__main__':
