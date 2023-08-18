@@ -34,7 +34,6 @@ class PortfolioResource(Resource):
         parser.add_argument("buy_datetime", required=True)
         parser.add_argument("mature_datetime")
         parser.add_argument("currency")
-        parser.add_argument("performance")
         args = parser.parse_args()
 
         asset_type = args["asset_type"].upper()
@@ -60,13 +59,12 @@ class PortfolioResource(Resource):
             mature_datetime = None
 
         currency = args["currency"].upper() if args["currency"] else None
-        performance = args["performance"]
         
         with get_db() as db, db.cursor() as cursor:
             cursor.execute('''INSERT INTO portfolio 
                           (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency)
                           VALUES (%s, %s, %s, %s, %s, %s, %s)''',
-                       (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency, performance))
+                       (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency))
 
             db.commit()
         resource_url = api.url_for(AssetResource,asset_id=cursor.lastrowid, _external=True)
@@ -115,7 +113,6 @@ class AssetResource(Resource):
         parser.add_argument("buy_datetime", required=True)
         parser.add_argument("mature_datetime")
         parser.add_argument("currency")
-        parser.add_argument("performance")
         args = parser.parse_args()
 
         asset_type = args["asset_type"].upper()
@@ -141,13 +138,12 @@ class AssetResource(Resource):
             mature_datetime = None
 
         currency = args["currency"].upper() if args["currency"] else None
-        performance = args["performance"]
 
         with get_db() as db, db.cursor() as cursor:
             cursor.execute('''UPDATE portfolio
                          SET asset_type=%s, asset_ticker=%s, asset_name=%s, amount_holding=%s,
-                         buy_datetime=%s, mature_datetime=%s, currency=%s, performance=%s WHERE id=%s''', \
-                        (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency, performance, asset_id))
+                         buy_datetime=%s, mature_datetime=%s, currency=%s WHERE id=%s''', \
+                        (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency, asset_id))
             db.commit()
             changed_OK = {"message": "Asset updated successfully"}, 200
             not_found = {"error": "Asset not found"}, 404
