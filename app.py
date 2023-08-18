@@ -103,6 +103,51 @@ class AssetResource(Resource):
             asset = cursor.fetchone()
         return jsonify(asset)
 
+    def put(self, asset_id):
+        parser = reqparse.RequestParser()
+        parser.add_argument("asset_type", required=True)
+        parser.add_argument("asset_ticker")
+        parser.add_argument("asset_name", required=True)
+        parser.add_argument("amount_holding", required=True, type=int)
+        parser.add_argument("buy_datetime", required=True)
+        parser.add_argument("mature_datetime")
+        parser.add_argument("currency")
+        args = parser.parse_args()
+
+        asset_type = args["asset_type"].upper()
+        asset_ticker = args["asset_ticker"].upper()
+        asset_name = args["asset_name"].upper()
+        amount_holding = args["amount_holding"]
+        
+        try:
+            # Parse start_datetime using dateutil.parser
+            buy_datetime = dateparser.parse(args["buy_datetime"])
+            buy_datetime = buy_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
+        except Exception as e:
+            return {"error": "Invalid buy_datetime format"}, 400
+        
+        if args["mature_datetime"]:
+            try:
+                # Parse mature_datetime using dateutil.parser
+                mature_datetime = dateparser.parse(args["mature_datetime"])
+                mature_datetime = mature_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
+            except Exception as e:
+                return {"error": "Invalid mature_datetime format"}, 400
+        else:
+            mature_datetime = None
+
+        currency = args["currency"].upper() if args["currency"] else None
+
+        with get_db() as db, db.cursor() as cursor:
+            cursor.execute('''UPDATE portfolio
+                         SET asset_type=%s, asset_ticker=%s, asset_name=%s, amount_holding=%s, buy_datetime=%s, mature_datetime=%s, currency=%s WHERE id=%s''', \
+                        (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime,currency, asset_id))
+            db.commit()
+            changed_OK = {"message": "Asset updated successfully"}, 200
+            not_found = {"error": "Asset not found"}, 404
+            json = changed_OK if cursor.rowcount else not_found
+        return json
+	    
     def delete(self, asset_id):
         parser = reqparse.RequestParser()
         parser.add_argument("asset_id")
