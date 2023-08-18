@@ -27,8 +27,8 @@ CREATE TABLE asset_data (
     close_price FLOAT,
     high_price FLOAT,
     low_price FLOAT,
-    portolio_id INT,
-    FOREIGN KEY (portolio_id) REFERENCES portfolio(id)
+    portfolio_id INT,
+    FOREIGN KEY (portfolio_id) REFERENCES portfolio(id)
 );
 
 CREATE TABLE historical_networth (
@@ -52,7 +52,7 @@ SELECT * FROM portfolio;
 
 -- Insert into the asset_data table
 -- Insert CVS asset data
-INSERT INTO asset_data (asset_type, asset_ticker, asset_name, date, open_price, close_price, high_price, low_price,portolio_id)
+INSERT INTO asset_data (asset_type, asset_ticker, asset_name, date, open_price, close_price, high_price, low_price,portfolio_id)
 VALUES ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-11 00:00:00', 80.25, 81.12, 82.18, 80.10,1),
        ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-12 00:00:00', 81.50, 82.30, 83.45, 81.30,1),
        ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-13 00:00:00', 82.40, 82.80, 83.90, 82.00,1),
@@ -62,7 +62,7 @@ VALUES ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-11 00:00:00', 80.25, 
        ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-17 00:00:00', 82.80, 82.75, 83.00, 82.60,1);
 
 -- Insert TESLA asset data
-INSERT INTO asset_data (asset_type, asset_ticker, asset_name, date, open_price, close_price, high_price, low_price,portolio_id)
+INSERT INTO asset_data (asset_type, asset_ticker, asset_name, date, open_price, close_price, high_price, low_price,portfolio_id)
 VALUES ('Stock', 'TSLA', 'Tesla, Inc.', '2023-08-11 00:00:00', 710.25, 716.80, 720.50, 706.90,2),
        ('Stock', 'TSLA', 'Tesla, Inc.', '2023-08-12 00:00:00', 718.50, 723.60, 728.20, 717.90,2),
        ('Stock', 'TSLA', 'Tesla, Inc.', '2023-08-13 00:00:00', 724.00, 729.10, 732.40, 722.50,2),
@@ -72,7 +72,7 @@ VALUES ('Stock', 'TSLA', 'Tesla, Inc.', '2023-08-11 00:00:00', 710.25, 716.80, 7
        ('Stock', 'TSLA', 'Tesla, Inc.', '2023-08-17 00:00:00', 740.00, 743.90, 746.80, 737.50,2);
 
 -- Insert GOOGLE asset data
-INSERT INTO asset_data (asset_type, asset_ticker, asset_name, date, open_price, close_price, high_price, low_price,portolio_id)
+INSERT INTO asset_data (asset_type, asset_ticker, asset_name, date, open_price, close_price, high_price, low_price,portfolio_id)
 VALUES ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-11 00:00:00', 130.90, 131.20, 131.60, 130.80,3),
        ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-12 00:00:00', 129.80, 130.10, 130.70, 129.20,3),
        ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-13 00:00:00', 130.15, 130.40, 130.90, 129.80,3),
@@ -83,7 +83,7 @@ VALUES ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-11 00:00:00', 130.90, 131.20
 
 
 -- Insert MORGAN STANLEY asset data
-INSERT INTO asset_data (asset_type, asset_ticker, asset_name, date, open_price, close_price, high_price, low_price,portolio_id)
+INSERT INTO asset_data (asset_type, asset_ticker, asset_name, date, open_price, close_price, high_price, low_price,portfolio_id)
 VALUES ('Stock', 'MS', 'Morgan Stanley', '2023-08-11 00:00:00', 96.75, 97.10, 98.20, 96.40,4),
        ('Stock', 'MS', 'Morgan Stanley', '2023-08-12 00:00:00', 97.30, 97.50, 98.10, 97.00,4),
        ('Stock', 'MS', 'Morgan Stanley', '2023-08-13 00:00:00', 97.70, 98.00, 98.50, 97.20,4),
@@ -93,7 +93,7 @@ VALUES ('Stock', 'MS', 'Morgan Stanley', '2023-08-11 00:00:00', 96.75, 97.10, 98
        ('Stock', 'MS', 'Morgan Stanley', '2023-08-17 00:00:00', 98.70, 98.80, 99.10, 98.40,4);
 
 -- Insert WALMART asset data
-INSERT INTO asset_data (asset_type, asset_ticker, asset_name, date, open_price, close_price, high_price, low_price,portolio_id)
+INSERT INTO asset_data (asset_type, asset_ticker, asset_name, date, open_price, close_price, high_price, low_price,portfolio_id)
 VALUES ('Stock', 'WMT', 'Walmart Inc.', '2023-08-11 00:00:00', 140.50, 141.20, 141.80, 140.10,5),
        ('Stock', 'WMT', 'Walmart Inc.', '2023-08-12 00:00:00', 141.60, 141.80, 142.30, 141.10,5),
        ('Stock', 'WMT', 'Walmart Inc.', '2023-08-13 00:00:00', 142.00, 142.40, 142.90, 141.70,5),
