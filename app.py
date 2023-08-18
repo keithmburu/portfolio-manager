@@ -154,7 +154,6 @@ class AssetResource(Resource):
     def delete(self, portfolio_id):
         with get_db() as db, db.cursor() as cursor:
             cursor.execute('''DELETE FROM portfolio WHERE id = %s''', (portfolio_id,))
-            cursor.execute('''DELETE FROM asset_data WHERE portfolio_id = %s''', (portfolio_id,))
             db.commit()
         return {"message": "Removed asset from portfolio"}, 200
 
