@@ -15,8 +15,10 @@ res = post("http://localhost:5000/", json={"asset_type": 'Bond' , "asset_ticker"
                                             "buy_datetime": '2023-08-17 12:46:00',
                                            "mature_datetime": '2028-08-17 12:46:00', "currency": 'USD'})
 print_response(res)
-if res.status_code == 201:
-        asset_id = int(res.headers['Location'].split('/')[-1])
+
+if res.status_code == 201 and "Location" in res.headers:
+    res = get(res.headers["Location"])
+    asset_id = int(res.split('/')[-1])
 else:
         exit()
 
