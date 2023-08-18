@@ -2,8 +2,9 @@ DROP DATABASE IF EXISTS TAPHK;
 CREATE DATABASE IF NOT EXISTS TAPHK;
 USE TAPHK;
 CREATE USER IF NOT EXISTS 'training'@'localhost' IDENTIFIED BY '1234567A';
-GRANT ALL PRIVILEGES ON TAPHK TO 'training'@'localhost';
-
+GRANT ALL PRIVILEGES ON TAPHK.portfolio TO 'training'@'localhost';
+GRANT ALL PRIVILEGES ON TAPHK.asset_data TO 'training'@'localhost';
+GRANT ALL PRIVILEGES ON TAPHK.historical_networth TO 'training'@'localhost';
 
 CREATE TABLE portfolio (
     id INT PRIMARY KEY auto_increment,
