@@ -64,7 +64,7 @@ class PortfolioResource(Resource):
             cursor.execute('''INSERT INTO portfolio 
                           (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency)
                           VALUES (%s, %s, %s, %s, %s, %s, %s)''',
-                       (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime,currency))
+                       (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency))
 
             db.commit()
         resource_url = api.url_for(AssetResource,portfolio_id=cursor.lastrowid, _external=True)
