@@ -7,7 +7,8 @@ app = Flask(__name__)
 api = Api(app)
 
 
-db = mysql.connector.connect(
+def get_db():
+    return mysql.connector.connect(
         host="localhost",
         user="training",
         password="1234567A",
@@ -17,10 +18,9 @@ db = mysql.connector.connect(
 
 class PortfolioResource(Resource):
     def get(self):
-        cursor = db.cursor()
-        cursor.execute('''SELECT * FROM portfolio''')
-        portfolio = cursor.fetchall()
-        cursor.close()
+        with db as get_db(), cursor as db.cursor():
+            cursor.execute('''SELECT * FROM portfolio''')
+            portfolio = cursor.fetchall()
         return jsonify(portfolio)
 
     def post(self):
@@ -56,60 +56,54 @@ class PortfolioResource(Resource):
 
         currency = args["currency"].upper() if args["currency"] else None
         
-        cursor = db.cursor()
-        cursor.execute('''INSERT INTO portfolio 
+        with db as get_db(), cursor as db.cursor():
+            cursor.execute('''INSERT INTO portfolio 
                           (asset_type, asset_ticker, asset_name, amount_holding, start_datetime, mature_datetime, currency)
                           VALUES (%s, %s, %s, %s, %s, %s, %s)''',
                        (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime,currency))
 
-        db.commit()
-        cursor.close()
+            db.commit()
         return {"message": "Added new asset to portfolio"}, 201
 
 
 class StocksResource(Resource):
     def get(self):
-        cursor = db.cursor()
-        cursor.execute('''SELECT * FROM portfolio WHERE asset_type = stock''')
-        stocks = cursor.fetchall()
-        cursor.close()
+        with db as get_db(), cursor as db.cursor():
+            cursor.execute('''SELECT * FROM portfolio WHERE asset_type = stock''')
+            stocks = cursor.fetchall()
         return jsonify(stocks)
 
 
 class BondsResource(Resource):
     def get(self):
-        cursor = db.cursor()
-        cursor.execute('''SELECT * FROM portfolio WHERE asset_type = bond''')
-        bonds = cursor.fetchall()
-        cursor.close()
+        with db as get_db(), cursor as db.cursor():
+            cursor.execute('''SELECT * FROM portfolio WHERE asset_type = bond''')
+            bonds = cursor.fetchall()
         return jsonify(bonds)
 
 
 class CashResource(Resource):
     def get(self):
-        cursor = db.cursor()
-        cursor.execute('''SELECT * FROM portfolio WHERE asset_type = cash''')
-        cash = cursor.fetchall()
-        cursor.close()
+        with db as get_db(), cursor as db.cursor():
+            cursor.execute('''SELECT * FROM portfolio WHERE asset_type = cash''')
+            cash = cursor.fetchall()
         return jsonify(cash)
 
 
 class AssetResource(Resource):
     def get(self, asset_id):
-        cursor = db.cursor()
-        cursor.execute('''SELECT * FROM portfolio WHERE id = %s''', (asset_id,))
-        asset = cursor.fetchone()
-        cursor.close()
+        with db as get_db(), cursor as db.cursor():
+            cursor.execute('''SELECT * FROM portfolio WHERE id = %s''', (asset_id,))
+            asset = cursor.fetchone()
         return jsonify(asset)
 
     def delete(self, asset_id):
         parser = reqparse.RequestParser()
         parser.add_argument("asset_id")
         args = parser.parse_args()
-        cursor = db.cursor()
-        cursor.execute('''DELETE FROM portfolio WHERE id = %s''', (args["asset_id"],))
-        db.commit()
-        cursor.close()
+        with db as get_db(), cursor as db.cursor():
+            cursor.execute('''DELETE FROM portfolio WHERE id = %s''', (args["asset_id"],))
+            db.commit()
         return {"message": "Removed asset from portfolio"}, 200
 
 
