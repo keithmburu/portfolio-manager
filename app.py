@@ -151,10 +151,9 @@ class AssetResource(Resource):
 	    
     def delete(self, asset_id):
         parser = reqparse.RequestParser()
-        parser.add_argument("asset_id")
         args = parser.parse_args()
         with get_db() as db, db.cursor() as cursor:
-            cursor.execute('''DELETE FROM portfolio WHERE id = %s''', (args["asset_id"],))
+            cursor.execute('''DELETE FROM portfolio WHERE id = %s''', (asset_id,))
             db.commit()
         return {"message": "Removed asset from portfolio"}, 200
 
