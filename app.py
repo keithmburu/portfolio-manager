@@ -1,11 +1,11 @@
-import dateutil
+from dateutil import parser as dateparser
 from flask import Flask, jsonify
 from flask_restful import Resource, Api, reqparse
 import mysql.connector
 
 app = Flask(__name__)
 api = Api(app)
-
+app.debug = True
 
 db = mysql.connector.connect(
         host="localhost",
@@ -20,8 +20,10 @@ class PortfolioResource(Resource):
         cursor = db.cursor()
         cursor.execute('''SELECT * FROM portfolio''')
         portfolio = cursor.fetchall()
+        cursor.execute('''SELECT * FROM historical_networth''')
+        networth = cursor.fetchall()
         cursor.close()
-        return jsonify(portfolio)
+        return jsonify({"portfolio":portfolio, "networth":networth})
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -41,14 +43,16 @@ class PortfolioResource(Resource):
         
         try:
             # Parse start_datetime using dateutil.parser
-            buy_datetime = dateutil.parser.parse(args["buy_datetime"])
+            buy_datetime = dateparser.parse(args["buy_datetime"])
+            buy_datetime = buy_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
         except Exception as e:
             return {"error": "Invalid buy_datetime format"}, 400
         
         if args["mature_datetime"]:
             try:
                 # Parse mature_datetime using dateutil.parser
-                mature_datetime = dateutil.parser.parse(args["mature_datetime"])
+                mature_datetime = dateparser.parse(args["mature_datetime"])
+                mature_datetime = mature_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
             except Exception as e:
                 return {"error": "Invalid mature_datetime format"}, 400
         else:
@@ -58,7 +62,7 @@ class PortfolioResource(Resource):
         
         cursor = db.cursor()
         cursor.execute('''INSERT INTO portfolio 
-                          (asset_type, asset_ticker, asset_name, amount_holding, start_datetime, mature_datetime, currency)
+                          (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency)
                           VALUES (%s, %s, %s, %s, %s, %s, %s)''',
                        (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime,currency))
 

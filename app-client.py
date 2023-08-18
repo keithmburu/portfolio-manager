@@ -1,5 +1,4 @@
 from requests import get, post, put, delete
-
 asset_id = -1
 
 def print_response(response):
@@ -11,8 +10,7 @@ def print_response(response):
 		
 res = get(f"http://localhost:5000/")
 print_response(res)
-
-res = post("http://localhost:5000/", json={"asset_type": 'Bond' , "asset_ticker": NULL,
+res = post("http://localhost:5000/", json={"asset_type": 'Bond' , "asset_ticker": "NULL",
                                            "asset_name": '5-year Treasury Bond', "amount_holding": 1,
                                             "buy_datetime": '2023-08-17 12:46:00',
                                            "mature_datetime": '2028-08-17 12:46:00', "currency": 'USD'})
@@ -25,7 +23,7 @@ else:
 res = get(f"http://localhost:5000/{asset_id}")
 print_response(res)
 
-res = put(f"http://localhost:5000/{asset_id}", json={"asset_type": 'Bond' , "asset_ticker": NULL,
+res = put(f"http://localhost:5000/{asset_id}", json={"asset_type": 'Bond' , "asset_ticker": "NULL",
                                            "asset_name": '5-year Treasury Bond', "amount_holding": 1,
                                             "buy_datetime": '2023-08-18 12:46:00',
                                            "mature_datetime": '2028-08-18 12:46:00', "currency": 'USD'})

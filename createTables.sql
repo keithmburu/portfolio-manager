@@ -1,9 +1,8 @@
 DROP DATABASE IF EXISTS TAPHK;
+DROP USER IF EXISTS 'training'@'localhost';
+
 CREATE DATABASE IF NOT EXISTS TAPHK;
 USE TAPHK;
-CREATE USER 'training'@'localhost' IDENTIFIED BY '1234567A';
-GRANT ALL PRIVILEGES ON TAPHK TO 'training'@'localhost';
-
 
 CREATE TABLE portfolio (
     id INT PRIMARY KEY auto_increment,
@@ -13,7 +12,8 @@ CREATE TABLE portfolio (
     amount_holding INT NOT NULL,
     buy_datetime DATETIME NOT NULL,
     mature_datetime DATETIME,
-    currency VARCHAR(255)
+    currency VARCHAR(255),
+    performance FLOAT
 );
 
 
@@ -38,24 +38,12 @@ CREATE TABLE historical_networth (
 
 -- Insert into the portfolio table
 -- Insert TESLA stock data
-INSERT INTO portfolio (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency)
-VALUES ('Stock', 'TSLA', 'Tesla, Inc.', 50, '2023-08-11 10:30:00', NULL, 'USD');
-
--- Insert GOOGLE stock data
-INSERT INTO portfolio (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency)
-VALUES ('Stock', 'GOOGL', 'Alphabet Inc.', 30, '2023-08-11 11:45:00', NULL, 'USD');
-
--- Insert MORGAN STANLEY stock data
-INSERT INTO portfolio (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency)
-VALUES ('Stock', 'MS', 'Morgan Stanley', 75, '2023-08-11 13:15:00', NULL, 'USD');
-
--- Insert WALMART stock data
-INSERT INTO portfolio (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency)
-VALUES ('Stock', 'WMT', 'Walmart Inc.', 40, '2023-08-11 14:30:00', NULL, 'USD');
-
--- Insert CVS stock data
-INSERT INTO portfolio (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency)
-VALUES ('Stock', 'CVS', 'CVS Health Corporation', 100, '2023-08-11 09:00:00', NULL, 'USD');
+INSERT INTO portfolio (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency,performance)
+VALUES ('Stock', 'TSLA', 'Tesla, Inc.', 50, '2023-08-11 00:00:00', NULL, 'USD', NULL),
+       ('Stock', 'GOOGL', 'Alphabet Inc.', 30, '2023-08-11 00:00:00', NULL, 'USD', NULL),
+       ('Stock', 'MS', 'Morgan Stanley', 75, '2023-08-11 00:00:00', NULL, 'USD', NULL),
+       ('Stock', 'WMT', 'Walmart Inc.', 40, '2023-08-11 00:00:00', NULL, 'USD', NULL),
+       ('Stock', 'CVS', 'CVS Health Corporation', 100, '2023-08-11 00:00:00', NULL, 'USD', NULL);
 
 -- Display the portfolio table
 SELECT * FROM portfolio;
@@ -83,13 +71,13 @@ VALUES ('Stock', 'TSLA', 'Tesla, Inc.', '2023-08-11 00:00:00', 710.25, 716.80, 7
 
 -- Insert GOOGLE asset data
 INSERT INTO asset_data (asset_type, asset_ticker, asset_name, date, open_price, close_price, high_price, low_price)
-VALUES ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-11 00:00:00', 128.50, 129.75, 130.20, 128.00),
+VALUES ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-11 00:00:00', 130.90, 131.20, 131.60, 130.80),
        ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-12 00:00:00', 129.80, 130.10, 130.70, 129.20),
        ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-13 00:00:00', 130.15, 130.40, 130.90, 129.80),
        ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-14 00:00:00', 130.30, 130.60, 131.00, 130.10),
        ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-15 00:00:00', 130.50, 130.80, 131.20, 130.40),
        ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-16 00:00:00', 130.70, 131.00, 131.40, 130.60),
-       ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-17 00:00:00', 130.90, 131.20, 131.60, 130.80);
+       ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-17 00:00:00', 128.50, 129.75, 130.20, 128.00);
 
 
 -- Insert MORGAN STANLEY asset data
@@ -124,3 +112,31 @@ GROUP BY ad.date;
 
 -- Display the calculated historical net worth
 SELECT * FROM historical_networth;
+
+UPDATE portfolio p
+JOIN (
+    SELECT 
+        ad.asset_name, 
+        ((ad.close_price - ad.buy_price) / ad.buy_price) * 100 AS performance
+    FROM (
+        SELECT 
+            p.asset_name, 
+            p.buy_datetime,
+            ad.close_price,
+            (SELECT open_price FROM asset_data WHERE asset_name = p.asset_name AND date = p.buy_datetime) AS buy_price
+        FROM portfolio p
+        JOIN asset_data ad ON p.asset_name = ad.asset_name
+        WHERE ad.date = (SELECT MAX(date) FROM asset_data WHERE asset_name = p.asset_name)
+    ) AS ad
+) AS asset_performance ON p.asset_name = asset_performance.asset_name
+SET p.performance = asset_performance.performance;
+
+
+-- Display the updated portfolio table
+SELECT * FROM portfolio;
+
+CREATE USER 'training'@'localhost' IDENTIFIED BY '1234567A';
+GRANT ALL PRIVILEGES ON TAPHK.* TO 'training'@'localhost';
+FLUSH PRIVILEGES;
+
+SHOW GRANTS FOR 'training'@'localhost';
