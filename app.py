@@ -36,9 +36,9 @@ class PortfolioResource(Resource):
         parser.add_argument("currency")
         args = parser.parse_args()
 
-        asset_type = args["asset_type"].upper()
-        asset_ticker = args["asset_ticker"].upper()
-        asset_name = args["asset_name"].upper()
+        asset_type = args["asset_type"]
+        asset_ticker = args["asset_ticker"]
+        asset_name = args["asset_name"]
         amount_holding = args["amount_holding"]
         
         try:
@@ -67,7 +67,7 @@ class PortfolioResource(Resource):
                        (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime,currency))
 
             db.commit()
-        resource_url = api.url_for(AssetResource,asset_id=cursor.lastrowid, _external=True)
+        resource_url = api.url_for(AssetResource,portfolio_id=cursor.lastrowid, _external=True)
         insert_ok = ({"message": "Added new asset to portfolio"}, 201, {"Location": f"{resource_url}"})
         insert_failed = ({"message": "Failed to add new asset to portfolio"}, 400)
         return insert_ok if cursor.rowcount else insert_failed
@@ -98,13 +98,15 @@ class CashResource(Resource):
 
 
 class AssetResource(Resource):
-    def get(self, asset_id):
+    def get(self, portfolio_id):
         with get_db() as db, db.cursor() as cursor:
-            cursor.execute('''SELECT * FROM portfolio WHERE id = %s''', (asset_id,))
-            asset = cursor.fetchone()
-        return jsonify(asset)
+            cursor.execute('''SELECT * FROM asset_data WHERE portfolio_id = %s''', (portfolio_id,))
+            asset = cursor.fetchall()
+            cursor.execute('''SELECT * FROM portfolio WHERE id = %s''', (portfolio_id,))
+            portfolio = cursor.fetchone()
+        return jsonify({"portfolio":portfolio, "assets":asset})
 
-    def put(self, asset_id):
+    def put(self, portfolio_id):
         parser = reqparse.RequestParser()
         parser.add_argument("asset_type", required=True)
         parser.add_argument("asset_ticker")
@@ -115,9 +117,9 @@ class AssetResource(Resource):
         parser.add_argument("currency")
         args = parser.parse_args()
 
-        asset_type = args["asset_type"].upper()
-        asset_ticker = args["asset_ticker"].upper()
-        asset_name = args["asset_name"].upper()
+        asset_type = args["asset_type"]
+        asset_ticker = args["asset_ticker"]
+        asset_name = args["asset_name"]
         amount_holding = args["amount_holding"]
         
         try:
@@ -137,23 +139,22 @@ class AssetResource(Resource):
         else:
             mature_datetime = None
 
-        currency = args["currency"].upper() if args["currency"] else None
+        currency = args["currency"] if args["currency"] else None
 
         with get_db() as db, db.cursor() as cursor:
             cursor.execute('''UPDATE portfolio
                          SET asset_type=%s, asset_ticker=%s, asset_name=%s, amount_holding=%s, buy_datetime=%s, mature_datetime=%s, currency=%s WHERE id=%s''', \
-                        (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime,currency, asset_id))
+                        (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime,currency, portfolio_id))
             db.commit()
             changed_OK = {"message": "Asset updated successfully"}, 200
             not_found = {"error": "Asset not found"}, 404
             json = changed_OK if cursor.rowcount else not_found
         return json
 	    
-    def delete(self, asset_id):
-        parser = reqparse.RequestParser()
-        args = parser.parse_args()
+    def delete(self, portfolio_id):
         with get_db() as db, db.cursor() as cursor:
-            cursor.execute('''DELETE FROM portfolio WHERE id = %s''', (asset_id,))
+            cursor.execute('''DELETE FROM portfolio WHERE id = %s''', (portfolio_id,))
+            cursor.execute('''DELETE FROM asset_data WHERE portfolio_id = %s''', (portfolio_id,))
             db.commit()
         return {"message": "Removed asset from portfolio"}, 200
 
@@ -163,7 +164,7 @@ api.add_resource(PortfolioResource, '/')
 api.add_resource(StocksResource, '/stocks')
 api.add_resource(BondsResource, '/bonds')
 api.add_resource(CashResource, '/cash')
-api.add_resource(AssetResource, '/<int:asset_id>')
+api.add_resource(AssetResource, '/<int:portfolio_id>')
 
 
 if __name__ == '__main__':
