@@ -17,8 +17,8 @@ res = post("http://localhost:5000/", json={"asset_type": 'Bond' , "asset_ticker"
 print_response(res)
 
 if res.status_code == 201 and "Location" in res.headers:
-    res = get(res.headers["Location"])
-    asset_id = int(res.split('/')[-1])
+    URI = res.headers["Location"]
+    asset_id = int(URI.split('/')[-1])
 else:
         exit()
 

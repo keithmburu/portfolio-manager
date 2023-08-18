@@ -67,8 +67,8 @@ class PortfolioResource(Resource):
                        (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime,currency))
 
             db.commit()
-        resource_url = api.url_for(PortfolioResource,asset_id=cursor.lastrowid, _external=True)
-        insert_ok = ({"message": "Added new asset to portfolio"}, 201,{"Location": f"{resource_url}"})
+        resource_url = api.url_for(AssetResource,asset_id=cursor.lastrowid, _external=True)
+        insert_ok = ({"message": "Added new asset to portfolio"}, 201, {"Location": f"{resource_url}"})
         insert_failed = ({"message": "Failed to add new asset to portfolio"}, 400)
         return insert_ok if cursor.rowcount else insert_failed
 
