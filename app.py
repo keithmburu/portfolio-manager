@@ -67,7 +67,9 @@ class PortfolioResource(Resource):
                        (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime,currency))
 
             db.commit()
-        return {"message": "Added new asset to portfolio"}, 201
+            asset_id = cursor.lastrowid
+        return ({"message": "Added new asset to portfolio"}, 201,
+                {"Location": f"{api.url_for(AssetResource, asset_id=asset_id, _external=True)}"})
 
 
 class StocksResource(Resource):
