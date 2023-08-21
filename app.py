@@ -68,12 +68,14 @@ class PortfolioResource(Resource):
 
             # Retrieve the last inserted row's ID
             portfolio_id = cursor.lastrowid
-
+            
+            cursor.execute('''SELECT price FROM asset_data WHERE portfolio_id = %s AND date = %s''', (portfolio_id,buy_datetime,))
+            action_price = cursor.fetchone()[0]
             # Insert the transaction into the asset_transactions table
             cursor.execute('''INSERT INTO asset_transactions 
                               (asset_id, transaction_type, transaction_datetime, transaction_amount, transaction_price)
                               VALUES (%s, %s, %s, %s, %s)''',
-                           (portfolio_id, 'BUY', buy_datetime, amount_holding, 100))  # Example transaction_price
+                           (portfolio_id, 'BUY', buy_datetime, amount_holding, action_price))  # Example transaction_price
 
             db.commit()
 
@@ -130,7 +132,6 @@ class AssetResource(Resource):
 
         transaction_type = args["transaction_type"]
         transaction_amount = args["transaction_amount"]
-        transaction_price = args["transaction_price"]
         
         try:
             transaction_datetime = dateparser.parse(args["transaction_datetime"])
@@ -142,6 +143,14 @@ class AssetResource(Resource):
             # Retrieve the current amount holding for the asset
             cursor.execute('''SELECT amount_holding FROM portfolio WHERE id = %s''', (portfolio_id,))
             current_amount_holding = cursor.fetchone()[0]
+            
+            # get the current price for the asset
+            cursor.execute('''SELECT price FROM asset_data WHERE portfolio_id = %s AND date = %s''', (portfolio_id,transaction_datetime,))
+            action_price = cursor.fetchone()[0]
+            
+            # get the current networth for the portfolio
+            cursor.execute('''SELECT networth FROM historical_networth WHERE date = %s''', (transaction_datetime,))
+            networth = cursor.fetchone()[0]
             
             if transaction_type == "BUY":
                 # Calculate and update new amount holding
@@ -157,7 +166,7 @@ class AssetResource(Resource):
             cursor.execute('''INSERT INTO asset_transactions 
                               (asset_id, transaction_type, transaction_datetime, transaction_amount, transaction_price)
                               VALUES (%s, %s, %s, %s, %s)''',
-                           (portfolio_id, transaction_type, transaction_datetime, transaction_amount, transaction_price))
+                           (portfolio_id, transaction_type, transaction_datetime, transaction_amount, action_price))
             db.commit()
 
             # Update the portfolio's amount_holding after transaction

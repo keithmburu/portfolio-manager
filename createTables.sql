@@ -72,13 +72,20 @@ SELECT * FROM asset_transactions;
 -- Insert into the asset_data table
 -- Insert CVS asset data
 INSERT INTO asset_data (asset_type, asset_ticker, asset_name, date, open_price, close_price, high_price, low_price,portfolio_id)
-VALUES ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-11 00:00:00', 80.25, 81.12, 82.18, 80.10,1),
-       ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-12 00:00:00', 81.50, 82.30, 83.45, 81.30,1),
-       ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-13 00:00:00', 82.40, 82.80, 83.90, 82.00,1),
-       ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-14 00:00:00', 82.70, 82.60, 83.20, 82.40,1),
-       ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-15 00:00:00', 82.50, 82.80, 83.10, 82.30,1),
-       ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-16 00:00:00', 82.70, 82.90, 83.30, 82.50,1),
-       ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-17 00:00:00', 82.80, 82.75, 83.00, 82.60,1);
+VALUES 
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-11 00:00:00', 80.25, 81.12, 82.18, 80.10,1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-12 00:00:00', 81.50, 82.30, 83.45, 81.30,1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-13 00:00:00', 82.40, 82.80, 83.90, 82.00,1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-14 00:00:00', 82.70, 82.60, 83.20, 82.40,1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-15 00:00:00', 82.50, 82.80, 83.10, 82.30,1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-16 00:00:00', 82.70, 82.90, 83.30, 82.50,1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-17 00:00:00', 82.80, 82.75, 83.00, 82.60,1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-18 00:00:00', 80.25, 81.12, 82.18, 80.10, 1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-21 00:00:00', 80.25, 81.12, 82.18, 80.10, 1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-22 00:00:00', 81.50, 82.30, 83.45, 81.30, 1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-23 00:00:00', 82.40, 82.80, 83.90, 82.00, 1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-24 00:00:00', 82.70, 82.60, 83.20, 82.40, 1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-25 00:00:00', 82.50, 82.80, 83.10, 82.30, 1);;
 
 -- Insert TESLA asset data
 INSERT INTO asset_data (asset_type, asset_ticker, asset_name, date, open_price, close_price, high_price, low_price,portfolio_id)
@@ -88,7 +95,12 @@ VALUES ('Stock', 'TSLA', 'Tesla, Inc.', '2023-08-11 00:00:00', 710.25, 716.80, 7
        ('Stock', 'TSLA', 'Tesla, Inc.', '2023-08-14 00:00:00', 727.80, 731.20, 734.10, 726.70,2),
        ('Stock', 'TSLA', 'Tesla, Inc.', '2023-08-15 00:00:00', 731.50, 735.50, 738.20, 728.80,2),
        ('Stock', 'TSLA', 'Tela, Inc.', '2023-08-16 00:00:00', 735.20, 739.80, 742.60, 732.70,2),
-       ('Stock', 'TSLA', 'Tesla, Inc.', '2023-08-17 00:00:00', 740.00, 743.90, 746.80, 737.50,2);
+       ('Stock', 'TSLA', 'Tesla, Inc.', '2023-08-17 00:00:00', 740.00, 743.90, 746.80, 737.50,2),
+       ('Stock', 'TSLA', 'Tesla, Inc.', '2023-08-21 00:00:00', 710.25, 716.80, 720.50, 706.90, 2),
+    ('Stock', 'TSLA', 'Tesla, Inc.', '2023-08-22 00:00:00', 718.50, 723.60, 728.20, 717.90, 2),
+    ('Stock', 'TSLA', 'Tesla, Inc.', '2023-08-23 00:00:00', 724.00, 729.10, 732.40, 722.50, 2),
+    ('Stock', 'TSLA', 'Tesla, Inc.', '2023-08-24 00:00:00', 727.80, 731.20, 734.10, 726.70, 2),
+    ('Stock', 'TSLA', 'Tesla, Inc.', '2023-08-25 00:00:00', 731.50, 735.50, 738.20, 728.80, 2);
 
 -- Insert GOOGLE asset data
 INSERT INTO asset_data (asset_type, asset_ticker, asset_name, date, open_price, close_price, high_price, low_price,portfolio_id)
@@ -98,7 +110,12 @@ VALUES ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-11 00:00:00', 130.90, 131.20
        ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-14 00:00:00', 130.30, 130.60, 131.00, 130.10,3),
        ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-15 00:00:00', 130.50, 130.80, 131.20, 130.40,3),
        ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-16 00:00:00', 130.70, 131.00, 131.40, 130.60,3),
-       ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-17 00:00:00', 128.50, 129.75, 130.20, 128.00,3);
+       ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-17 00:00:00', 128.50, 129.75, 130.20, 128.00,3),
+       ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-21 00:00:00', 130.90, 131.20, 131.60, 130.80, 3),
+    ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-22 00:00:00', 129.80, 130.10, 130.70, 129.20, 3),
+    ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-23 00:00:00', 130.15, 130.40, 130.90, 129.80, 3),
+    ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-24 00:00:00', 130.30, 130.60, 131.00, 130.10, 3),
+    ('Stock', 'GOOGL', 'Alphabet Inc.', '2023-08-25 00:00:00', 130.50, 130.80, 131.20, 130.40, 3);
 
 
 -- Insert MORGAN STANLEY asset data
@@ -109,7 +126,12 @@ VALUES ('Stock', 'MS', 'Morgan Stanley', '2023-08-11 00:00:00', 96.75, 97.10, 98
        ('Stock', 'MS', 'Morgan Stanley', '2023-08-14 00:00:00', 97.90, 98.20, 98.60, 97.50,4),
        ('Stock', 'MS', 'Morgan Stanley', '2023-08-15 00:00:00', 98.10, 98.40, 98.80, 97.70,4),
        ('Stock', 'MS', 'Morgan Stanley', '2023-08-16 00:00:00', 98.30, 98.60, 99.00, 98.10,4),
-       ('Stock', 'MS', 'Morgan Stanley', '2023-08-17 00:00:00', 98.70, 98.80, 99.10, 98.40,4);
+       ('Stock', 'MS', 'Morgan Stanley', '2023-08-17 00:00:00', 98.70, 98.80, 99.10, 98.40,4),
+       ('Stock', 'MS', 'Morgan Stanley', '2023-08-21 00:00:00', 96.75, 97.10, 98.20, 96.40, 4),
+    ('Stock', 'MS', 'Morgan Stanley', '2023-08-22 00:00:00', 97.30, 97.50, 98.10, 97.00, 4),
+    ('Stock', 'MS', 'Morgan Stanley', '2023-08-23 00:00:00', 97.70, 98.00, 98.50, 97.20, 4),
+    ('Stock', 'MS', 'Morgan Stanley', '2023-08-24 00:00:00', 97.90, 98.20, 98.60, 97.50, 4),
+    ('Stock', 'MS', 'Morgan Stanley', '2023-08-25 00:00:00', 98.10, 98.40, 98.80, 97.70, 4);
 
 -- Insert WALMART asset data
 INSERT INTO asset_data (asset_type, asset_ticker, asset_name, date, open_price, close_price, high_price, low_price,portfolio_id)
@@ -119,7 +141,12 @@ VALUES ('Stock', 'WMT', 'Walmart Inc.', '2023-08-11 00:00:00', 140.50, 141.20, 1
        ('Stock', 'WMT', 'Walmart Inc.', '2023-08-14 00:00:00', 142.30, 142.60, 142.90, 142.10,5),
        ('Stock', 'WMT', 'Walmart Inc.', '2023-08-15 00:00:00', 142.70, 143.00, 143.40, 142.50,5),
        ('Stock', 'WMT', 'Walmart Inc.', '2023-08-16 00:00:00', 143.20, 143.50, 143.80, 142.90,5),
-       ('Stock', 'WMT', 'Walmart Inc.', '2023-08-17 00:00:00', 143.60, 143.70, 143.90, 143.30,5);
+       ('Stock', 'WMT', 'Walmart Inc.', '2023-08-17 00:00:00', 143.60, 143.70, 143.90, 143.30,5),
+       ('Stock', 'WMT', 'Walmart Inc.', '2023-08-21 00:00:00', 140.50, 141.20, 141.80, 140.10, 5),
+    ('Stock', 'WMT', 'Walmart Inc.', '2023-08-22 00:00:00', 141.60, 141.80, 142.30, 141.10, 5),
+    ('Stock', 'WMT', 'Walmart Inc.', '2023-08-23 00:00:00', 142.00, 142.40, 142.90, 141.70, 5),
+    ('Stock', 'WMT', 'Walmart Inc.', '2023-08-24 00:00:00', 142.30, 142.60, 142.90, 142.10, 5),
+    ('Stock', 'WMT', 'Walmart Inc.', '2023-08-25 00:00:00', 142.70, 143.00, 143.40, 142.50, 5);
 
 -- Display the asset_data table
 SELECT * FROM asset_data;
