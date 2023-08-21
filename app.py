@@ -81,7 +81,7 @@ class PortfolioResource(Resource):
 
         resource_url = api.url_for(AssetResource, portfolio_id=portfolio_id, _external=True)
         insert_ok = ({"message": "Added new asset to portfolio"}, 201, {"Location": f"{resource_url}"})
-        insert_failed = ({"message": "Failed to add new asset to portfolio"}, 400)
+        insert_failed = ({"error": "Failed to add new asset to portfolio"}, 400)
         return insert_ok if cursor.rowcount else insert_failed
 
 
