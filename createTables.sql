@@ -37,6 +37,15 @@ CREATE TABLE historical_networth (
     networth FLOAT NOT NULL
 );
 
+CREATE TABLE asset_transactions (
+    id INT PRIMARY KEY auto_increment,
+    asset_id INT,
+    transaction_type ENUM('BUY', 'SELL') NOT NULL,
+    transaction_datetime DATETIME NOT NULL,
+    transaction_amount INT NOT NULL,
+    transaction_price FLOAT NOT NULL,
+    FOREIGN KEY (asset_id) REFERENCES portfolio(id)
+);
 
 -- Insert into the portfolio table
 -- Insert TESLA stock data
@@ -49,6 +58,16 @@ VALUES ('Stock', 'CVS', 'CVS Health Corporation', 100, '2023-08-11 00:00:00', NU
 
 -- Display the portfolio table
 SELECT * FROM portfolio;
+
+-- Insert all the buy actions into the asset_transaction table
+INSERT INTO asset_transactions (asset_id, transaction_type, transaction_datetime,transaction_amount, transaction_price)
+    VALUES (1, 'BUY', '2023-08-11 00:00:00',100, 81.12),
+            (2, 'BUY', '2023-08-11 00:00:00',50, 716.80),
+            (3, 'BUY', '2023-08-11 00:00:00',30, 131.20),
+            (4, 'BUY', '2023-08-11 00:00:00',75,97.10),
+            (5, 'BUY', '2023-08-11 00:00:00',40,141.20);
+-- Display the portfolio table
+SELECT * FROM asset_transactions;
 
 -- Insert into the asset_data table
 -- Insert CVS asset data
@@ -112,9 +131,13 @@ FROM asset_data ad
 JOIN portfolio p ON ad.asset_name = p.asset_name
 GROUP BY ad.date;
 
+-- The calculated net worth and performance is based on the historical data
+-- for the ease of our life, this portion of data is pre-calculate
+
 -- Display the calculated historical net worth
 SELECT * FROM historical_networth;
 
+-- calculate the performance of each asset in the portfolio
 UPDATE portfolio p
 JOIN (
     SELECT 

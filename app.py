@@ -40,14 +40,14 @@ class PortfolioResource(Resource):
         asset_ticker = args["asset_ticker"]
         asset_name = args["asset_name"]
         amount_holding = args["amount_holding"]
-        
+
         try:
             # Parse start_datetime using dateutil.parser
             buy_datetime = dateparser.parse(args["buy_datetime"])
             buy_datetime = buy_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
         except Exception as e:
             return {"error": "Invalid buy_datetime format"}, 400
-        
+
         if args["mature_datetime"]:
             try:
                 # Parse mature_datetime using dateutil.parser
@@ -59,18 +59,29 @@ class PortfolioResource(Resource):
             mature_datetime = None
 
         currency = args["currency"].upper() if args["currency"] else None
-        
+
         with get_db() as db, db.cursor() as cursor:
             cursor.execute('''INSERT INTO portfolio 
                           (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency)
                           VALUES (%s, %s, %s, %s, %s, %s, %s)''',
-                       (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency))
+                           (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency))
+
+            # Retrieve the last inserted row's ID
+            portfolio_id = cursor.lastrowid
+
+            # Insert the transaction into the asset_transactions table
+            cursor.execute('''INSERT INTO asset_transactions 
+                              (asset_id, transaction_type, transaction_datetime, transaction_amount, transaction_price)
+                              VALUES (%s, %s, %s, %s, %s)''',
+                           (portfolio_id, 'BUY', buy_datetime, amount_holding, 100))  # Example transaction_price
 
             db.commit()
-        resource_url = api.url_for(AssetResource,portfolio_id=cursor.lastrowid, _external=True)
+
+        resource_url = api.url_for(AssetResource, portfolio_id=portfolio_id, _external=True)
         insert_ok = ({"message": "Added new asset to portfolio"}, 201, {"Location": f"{resource_url}"})
         insert_failed = ({"message": "Failed to add new asset to portfolio"}, 400)
         return insert_ok if cursor.rowcount else insert_failed
+
 
 
 class StocksResource(Resource):
@@ -102,58 +113,89 @@ class AssetResource(Resource):
         with get_db() as db, db.cursor() as cursor:
             cursor.execute('''SELECT * FROM asset_data WHERE portfolio_id = %s''', (portfolio_id,))
             asset = cursor.fetchall()
+            cursor.execute('''SELECT * FROM asset_transactions WHERE asset_id = %s''', (portfolio_id,))
+            transactions = cursor.fetchall()
             cursor.execute('''SELECT * FROM portfolio WHERE id = %s''', (portfolio_id,))
             portfolio = cursor.fetchone()
-        return jsonify({"portfolio":portfolio, "assets":asset})
+        return jsonify({"portfolio":portfolio, "assets":asset,"transactions": transactions})
 
+    # put with the assumption
     def put(self, portfolio_id):
         parser = reqparse.RequestParser()
-        parser.add_argument("asset_type", required=True)
-        parser.add_argument("asset_ticker")
-        parser.add_argument("asset_name", required=True)
-        parser.add_argument("amount_holding", required=True, type=int)
-        parser.add_argument("buy_datetime", required=True)
-        parser.add_argument("mature_datetime")
-        parser.add_argument("currency")
+        parser.add_argument("transaction_type", required=True, choices=["BUY", "SELL"])
+        parser.add_argument("transaction_amount", required=True, type=int)
+        parser.add_argument("transaction_price", required=True, type=float)
+        parser.add_argument("transaction_datetime", required=True)
         args = parser.parse_args()
 
-        asset_type = args["asset_type"]
-        asset_ticker = args["asset_ticker"]
-        asset_name = args["asset_name"]
-        amount_holding = args["amount_holding"]
+        transaction_type = args["transaction_type"]
+        transaction_amount = args["transaction_amount"]
+        transaction_price = args["transaction_price"]
         
         try:
-            # Parse start_datetime using dateutil.parser
-            buy_datetime = dateparser.parse(args["buy_datetime"])
-            buy_datetime = buy_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
+            transaction_datetime = dateparser.parse(args["transaction_datetime"])
+            transaction_datetime = transaction_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
         except Exception as e:
-            return {"error": "Invalid buy_datetime format"}, 400
-        
-        if args["mature_datetime"]:
-            try:
-                # Parse mature_datetime using dateutil.parser
-                mature_datetime = dateparser.parse(args["mature_datetime"])
-                mature_datetime = mature_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
-            except Exception as e:
-                return {"error": "Invalid mature_datetime format"}, 400
-        else:
-            mature_datetime = None
-
-        currency = args["currency"] if args["currency"] else None
+            return {"error": "Invalid transaction_datetime format"}, 400
 
         with get_db() as db, db.cursor() as cursor:
-            cursor.execute('''UPDATE portfolio
-                         SET asset_type=%s, asset_ticker=%s, asset_name=%s, amount_holding=%s, buy_datetime=%s, mature_datetime=%s, currency=%s WHERE id=%s''', \
-                        (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime,currency, portfolio_id))
+            # Retrieve the current amount holding for the asset
+            cursor.execute('''SELECT amount_holding FROM portfolio WHERE id = %s''', (portfolio_id,))
+            current_amount_holding = cursor.fetchone()[0]
+            
+            if transaction_type == "BUY":
+                # Calculate and update new amount holding
+                updated_amount_holding = current_amount_holding + transaction_amount
+            elif transaction_type == "SELL":
+                if transaction_amount > current_amount_holding:
+                    return {"error": "Not enough assets to sell"}, 400
+                elif transaction_amount == current_amount_holding:
+                    # Call the delete function
+                    return self.delete(portfolio_id, transaction_datetime)
+                else:
+                    # Calculate and update new amount holding
+                    updated_amount_holding = current_amount_holding - transaction_amount
+
+            # Insert the transaction into the asset_transactions table
+            cursor.execute('''INSERT INTO asset_transactions 
+                              (asset_id, transaction_type, transaction_datetime, transaction_amount, transaction_price)
+                              VALUES (%s, %s, %s, %s, %s)''',
+                           (portfolio_id, transaction_type, transaction_datetime, transaction_amount, transaction_price))
             db.commit()
-            changed_OK = {"message": "Asset updated successfully"}, 200
-            not_found = {"error": "Asset not found"}, 404
-            json = changed_OK if cursor.rowcount else not_found
-        return json
-	    
-    def delete(self, portfolio_id):
+
+            # Update the portfolio's amount_holding after transaction
+            cursor.execute('''UPDATE portfolio SET amount_holding=%s WHERE id=%s''',
+                           (updated_amount_holding, portfolio_id))
+            db.commit()
+
+            # Return a response indicating success
+            return {"message": f"{transaction_type} transaction completed successfully"}, 200
+
+
+	
+    # delete the asset from the portfolio (i.e. sell all of it)    
+    def delete(self, portfolio_id,transaction_datetime):
         with get_db() as db, db.cursor() as cursor:
+            # get current amount_holding
+            cursor.execute('''SELECT amount_holding FROM portfolio WHERE id = %s''', (portfolio_id,))
+            current_amount_holding = cursor.fetchone()[0]
+            
+            # get the latest closing price
+            cursor.execute('''SELECT close_price
+                              FROM asset_data
+                              WHERE portfolio_id = %s
+                              ORDER BY date DESC
+                              LIMIT 1''', (portfolio_id,))
+            transaction_price = cursor.fetchone()[0]
+        
+            # Insert the transaction into the asset_transactions table
+            cursor.execute('''INSERT INTO asset_transactions 
+                              (asset_id, transaction_type, transaction_datetime, transaction_amount, transaction_price)
+                              VALUES (%s, %s, %s, %s, %s)''',
+                           (portfolio_id, "SELL", transaction_datetime, current_amount_holding, transaction_price))
+            db.commit()
             cursor.execute('''DELETE FROM portfolio WHERE id = %s''', (portfolio_id,))
+            
             db.commit()
         return {"message": "Removed asset from portfolio"}, 200
 

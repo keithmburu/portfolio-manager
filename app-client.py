@@ -9,6 +9,8 @@ def print_response(response):
 		
 res = get(f"http://localhost:5000/")
 print_response(res)
+
+# Create(i.e.) Buy new asset
 res = post("http://localhost:5000/", json={"asset_type": 'Bond' , "asset_ticker": "NULL",
                                            "asset_name": '5-year Treasury Bond', "amount_holding": 1,
                                             "buy_datetime": '2023-08-17 12:46:00',
@@ -21,21 +23,26 @@ if res.status_code == 201 and "Location" in res.headers:
 else:
         exit()
 
+portfolio_id = 5
 res = get(f"http://localhost:5000/{portfolio_id}")
 print_response(res)
 
-res = put(f"http://localhost:5000/{portfolio_id}", json={"asset_type": 'Bond' , "asset_ticker": "NULL",
-                                           "asset_name": '5-year Treasury Bond', "amount_holding": 1,
-                                            "buy_datetime": '2023-08-18 12:46:00',
-                                           "mature_datetime": '2028-08-18 12:46:00', "currency": 'USD'})
+# Buy action
+res = put(f"http://localhost:5000/{portfolio_id}", json={"transaction_type":"BUY",
+                                                         "transaction_amount":"10",
+                                                         "transaction_price":"140",
+                                                         "transaction_datetime":'2023-08-17 12:46:00'})
 print_response(res)
 
-res = get(f"http://localhost:5000/{1}")
+# Sell action
+res = put(f"http://localhost:5000/{portfolio_id}", json={"transaction_type":"SELL",
+                                                         "transaction_amount":"50",
+                                                         "transaction_price":"143",
+                                                         "transaction_datetime":'2023-08-17 12:48:00'})
 print_response(res)
 
-res = delete(f"http://localhost:5000/{portfolio_id}")
-print_response(res)
-
+# get information about certain asset
 res = get(f"http://localhost:5000/{portfolio_id}")
 print_response(res)
+
 
