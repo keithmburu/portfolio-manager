@@ -1,5 +1,6 @@
 /* 
 Embed in html:
+<div id="assets"></div>
 <form id="newAssetForm" onSubmit=newAsset()>
     <select id="assetType">
         <option value="Asset Type" selected>Asset Type</option>
@@ -10,23 +11,6 @@ Embed in html:
     <input type="text" id="assetTicker">Asset Ticker</input>
     <input type="datetime-local" id="matureDateTime">Maturity Date</input>
     <select id="currency">
-        <option value="Currency" selected>Currency</option>
-        <option value="USD">USD</option>
-        <option value="CAD">CAD</option>
-    </select>
-    <input type="submit">Submit</input>
-</form>
-
-<form id="updateAssetForm1" onSubmit=updateAsset(0)>
-    <select id="assetType1">
-        <option value="Asset Type" selected>Asset Type</option>
-        <option value="Stock">Stock</option>
-        <option value="Bond">Bond</option>
-        <option value="Cash">Cash</option>
-    </select>
-    <input type="text" id="assetTicker1">Asset Ticker</input>
-    <input type="datetime-local" id="matureDateTime1">Maturity Date</input>
-    <select id="currency1">
         <option value="Currency" selected>Currency</option>
         <option value="USD">USD</option>
         <option value="CAD">CAD</option>
@@ -57,13 +41,39 @@ async function newAsset() {
         body: JSON.stringify(assetData)
     });
     const data = await response.json();
-    const assetDiv = document.createElement('div'); 
-    assetDiv.id = `asset${id}`; 
-    assetDiv.innerHTML = `
+    if (data.message) window.alert(data.message);
+    if (data.error) window.alert(data.error);
+    const assetInfoDiv = document.createElement('div'); 
+    const assetFormDiv = document.createElement('div'); 
+    assetInfoDiv.id = `assetInfo${id}`; 
+    assetFormDiv.id = `assetForm${id}`;
+    assetInfoDiv.innerHTML = `
         <p><strong> ${assetData.asset_name} ${assetData.asset_ticker? assetData.asset_ticker: ""}</strong></p>
-        <p>${assetData.amount_holding}</p>
+        <p>${assetData.asset_type != "Stock"? assetData.currency : ""} ${assetData.amount_holding} ${assetData.asset_type == "Stock"? "shares" : ""}</p>
+        <button onClick="formVisible(${id})>Update</button>
+    `
+    assetFormDiv.innerhtml = `
+        <form id="updateAssetForm${id}" style="visibility:hidden" onSubmit=updateAsset(${id})>
+            <select id="assetType${id}">
+                <option value="Asset Type">Asset Type</option>
+                <option value="Stock">Stock</option>
+                <option value="Bond">Bond</option>
+                <option value="Cash">Cash</option>
+            </select>
+            <input type="text" id="assetTicker${id}">Asset Ticker</input>
+            <input type="datetime-local" id="matureDateTime${id}">Maturity Date</input>
+            <select id="currency${id}">
+                <option value="Currency" selected>Currency</option>
+                <option value="USD">USD</option>
+                <option value="CAD">CAD</option>
+            </select>
+            <input type="submit">Submit</input>
+        </form>
     `; 
-    document.getElementById('assetData').appendChild(assetDiv);
+    document.getElementById(`assetType${id}`).value = assetData.asset_type
+    const assets = document.getElementById('assets')
+    assets.appendChild(assetInfoDiv);
+    assets.appendChild(assetFormDiv);
 }
 
 async function updateAsset(id) {
@@ -84,9 +94,16 @@ async function updateAsset(id) {
         body: JSON.stringify(assetData)
     });
     const data = await response.json();
-    const assetDiv = document.getElementById(`asset${id}`); 
-    assetDiv.innerHTML = `
+    if (data.message) window.alert(data.message);
+    if (data.error) window.alert(data.error);
+    const assetInfoDiv = document.getElementById(`assetInfo${id}`); 
+    assetInfoDiv.innerHTML = `
         <p><strong> ${assetData.asset_name} ${assetData.asset_ticker? assetData.asset_ticker: ""}</strong></p>
-        <p>${assetData.amount_holding}</p>
-    `; 
+        <p>${assetData.asset_type != "Stock"? assetData.currency : ""} ${assetData.amount_holding} ${assetData.asset_type == "Stock"? "shares" : ""}</p>
+        <button onClick="formVisible(${id})>Update</button>
+    `
+}
+
+function formVisible(id) {
+    document.getElementById(`updateAssetForm${id}`).style.visibility = "visible"; 
 }
