@@ -149,9 +149,6 @@ class AssetResource(Resource):
             elif transaction_type == "SELL":
                 if transaction_amount > current_amount_holding:
                     return {"error": "Not enough assets to sell"}, 400
-                elif transaction_amount == current_amount_holding:
-                    # Call the delete function
-                    return self.delete(portfolio_id, transaction_datetime)
                 else:
                     # Calculate and update new amount holding
                     updated_amount_holding = current_amount_holding - transaction_amount
@@ -169,35 +166,37 @@ class AssetResource(Resource):
             db.commit()
 
             # Return a response indicating success
-            return {"message": f"{transaction_type} transaction completed successfully"}, 200
+            return {"message": f"{transaction_type} transaction completed successfully, current amount holding:{updated_amount_holding}"}, 200
 
-
+# remove the delete function since we cannot delete a portfolio item
+# since its id is using as a foreign key in the asset_data table
+# if sell all the shares of the asset, just set the amount_holding to 0
 	
-    # delete the asset from the portfolio (i.e. sell all of it)    
-    def delete(self, portfolio_id,transaction_datetime):
-        with get_db() as db, db.cursor() as cursor:
-            # get current amount_holding
-            cursor.execute('''SELECT amount_holding FROM portfolio WHERE id = %s''', (portfolio_id,))
-            current_amount_holding = cursor.fetchone()[0]
+    # # delete the asset from the portfolio (i.e. sell all of it)    
+    # def delete(self, portfolio_id,transaction_datetime):
+    #     with get_db() as db, db.cursor() as cursor:
+    #         # get current amount_holding
+    #         cursor.execute('''SELECT amount_holding FROM portfolio WHERE id = %s''', (portfolio_id,))
+    #         current_amount_holding = cursor.fetchone()[0]
             
-            # get the latest closing price
-            cursor.execute('''SELECT close_price
-                              FROM asset_data
-                              WHERE portfolio_id = %s
-                              ORDER BY date DESC
-                              LIMIT 1''', (portfolio_id,))
-            transaction_price = cursor.fetchone()[0]
+    #         # get the latest closing price
+    #         cursor.execute('''SELECT close_price
+    #                           FROM asset_data
+    #                           WHERE portfolio_id = %s
+    #                           ORDER BY date DESC
+    #                           LIMIT 1''', (portfolio_id,))
+    #         transaction_price = cursor.fetchone()[0]
         
-            # Insert the transaction into the asset_transactions table
-            cursor.execute('''INSERT INTO asset_transactions 
-                              (asset_id, transaction_type, transaction_datetime, transaction_amount, transaction_price)
-                              VALUES (%s, %s, %s, %s, %s)''',
-                           (portfolio_id, "SELL", transaction_datetime, current_amount_holding, transaction_price))
-            db.commit()
-            cursor.execute('''DELETE FROM portfolio WHERE id = %s''', (portfolio_id,))
+    #         # Insert the transaction into the asset_transactions table
+    #         cursor.execute('''INSERT INTO asset_transactions 
+    #                           (asset_id, transaction_type, transaction_datetime, transaction_amount, transaction_price)
+    #                           VALUES (%s, %s, %s, %s, %s)''',
+    #                        (portfolio_id, "SELL", transaction_datetime, current_amount_holding, transaction_price))
+    #         db.commit()
+    #         cursor.execute('''DELETE FROM portfolio WHERE id = %s''', (portfolio_id,))
             
-            db.commit()
-        return {"message": "Removed asset from portfolio"}, 200
+    #         db.commit()
+    #     return {"message": "Removed asset from portfolio"}, 200
 
 
     
