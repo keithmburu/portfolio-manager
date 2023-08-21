@@ -19,7 +19,7 @@ def get_db():
 class PortfolioResource(Resource):
     def get(self):
         with get_db() as db, db.cursor() as cursor:
-            cursor.execute('''SELECT * FROM portfolio''')
+            cursor.execute('''SELECT * FROM portfolio WHERE amount_holding > 0''')
             portfolio = cursor.fetchall()
             cursor.execute('''SELECT * FROM historical_networth''')
             networth = cursor.fetchall()
