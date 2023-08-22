@@ -1,3 +1,4 @@
+from datetime import date
 import random
 from dateutil import parser as dateparser
 from flask import Flask, jsonify, send_from_directory
@@ -152,7 +153,10 @@ class AssetResource(Resource):
             transactions = cursor.fetchall()
             cursor.execute('''SELECT * FROM portfolio WHERE id = %s''', (portfolio_id,))
             portfolio = cursor.fetchone()
-        return jsonify({"portfolio":portfolio, "assets":asset,"transactions": transactions})
+            cursor.execute('''SELECT close_price FROM asset_data WHERE portfolio_id = %s ORDER BY DATEDIFF(date, %s) ASC LIMIT 1''', (portfolio_id,date()))
+            nearest_price = cursor.fetchone()[0]
+            
+        return jsonify({"portfolio":portfolio, "assets":asset,"transactions": transactions,"nearest_price":nearest_price})
 
     # put with the assumption
     def put(self, portfolio_id):

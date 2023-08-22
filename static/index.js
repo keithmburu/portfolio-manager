@@ -5,7 +5,7 @@ const networthChartElement = document.getElementById('networth-chart'); // Add a
 
 document.addEventListener('DOMContentLoaded', () => {
     // Fetch portfolio data from the backend
-    fetch(apiUrl+'/')
+    fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
             const portfolioContainer = document.getElementById('portfolio-container');
@@ -124,10 +124,19 @@ async function transaction(id, transaction_type) {
     } else {
         transaction_amount = document.getElementById(`sellAmount${id}`).value;
     }
+    fetch(`${apiUrl}/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Latest Price:', data.nearest_price);
+                    transaction_price = data.nearest_price;
+                })
+                .catch(error => {
+                    console.error('Error fetching latest price:', error);
+                });
     const transactionData = {
         transaction_type: transaction_type, 
         transaction_amount: transaction_amount,
-        transaction_price: transaction_amount, // need to get price from API
+        transaction_price: transaction_price, // need to get price from API
         transaction_datetime: Date(),
     };
     try {
