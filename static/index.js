@@ -18,6 +18,8 @@ async function getAssets() {
                     <h2>${asset[3]}</h2>
                     <p>Amount Holding: ${asset[4]}</p>
                     <p>Profit: $${data.profit[asset[3]]}</p>
+                    <div>Action
+                    </div>
                     <div>
                         <input type="text" id="buyAmount${asset[0]}" value=0>
                         <button onclick="transaction(${asset[0]}, 'BUY')">Buy</button>
