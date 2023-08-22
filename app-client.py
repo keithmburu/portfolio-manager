@@ -11,8 +11,8 @@ res = get(f"http://localhost:5000/")
 print_response(res)
 
 # Create(i.e.) Buy new asset
-res = post("http://localhost:5000/", json={"asset_type": 'Bond' , "asset_ticker": "NULL",
-                                           "asset_name": '5-year Treasury Bond', "amount_holding": 1,
+res = post("http://localhost:5000/", json={"asset_type": 'stock' , "asset_ticker": "APPL",
+                                           "asset_name": 'Apple Inc.', "amount_holding": 10,
                                             "buy_datetime": '2023-08-17 12:46:00',
                                            "mature_datetime": '2028-08-17 12:46:00', "currency": 'USD'})
 print_response(res)

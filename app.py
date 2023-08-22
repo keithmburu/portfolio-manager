@@ -1,3 +1,4 @@
+import random
 from dateutil import parser as dateparser
 from flask import Flask, jsonify
 from flask_restful import Resource, Api, reqparse
@@ -20,11 +21,36 @@ def get_db():
 class PortfolioResource(Resource):
     def get(self):
         with get_db() as db, db.cursor() as cursor:
+            # Retrieve assets with positive amount holding
             cursor.execute('''SELECT * FROM portfolio WHERE amount_holding > 0''')
             portfolio = cursor.fetchall()
+            
+            # Calculate profit for each asset
+            for asset in portfolio:
+                # Retrieve the latest close price for the asset
+                cursor.execute('''SELECT close_price FROM asset_data WHERE portfolio_id = %s ORDER BY date DESC LIMIT 1''', (asset[0],))
+                latest_price_result = cursor.fetchone()[0]
+                
+                if latest_price_result:
+                    latest_price = latest_price_result
+                    
+                    cost = asset[9]
+                    amount_holding = asset[4]
+                    current_value = latest_price * amount_holding
+                    profit = current_value - cost
+                    
+                    asset = asset + (latest_price,)
+                    asset= asset + (profit,)
+                else:
+                    asset = asset + (None,)
+                    asset = asset + (None,)
+            
             cursor.execute('''SELECT * FROM historical_networth''')
             networth = cursor.fetchall()
-        return jsonify({"portfolio":portfolio, "networth":networth})
+        
+        return jsonify({"portfolio": portfolio, "networth": networth})
+
+
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -61,22 +87,35 @@ class PortfolioResource(Resource):
 
         currency = args["currency"].upper() if args["currency"] else None
 
+        # randomly generate some price for inserting into tables
+        closing_price = round(random.uniform(10, 100), 2)
+        high_price = round(closing_price * random.uniform(1.01, 1.1), 2)
+        low_price = round(closing_price * random.uniform(0.9, 0.99), 2)
+        open_price = round(random.uniform(low_price, high_price), 2)
+        
+        cost = amount_holding * closing_price
+        
         with get_db() as db, db.cursor() as cursor:
             cursor.execute('''INSERT INTO portfolio 
-                          (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency)
-                          VALUES (%s, %s, %s, %s, %s, %s, %s)''',
-                           (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency))
+                          (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency, cost)
+                          VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''',
+                           (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency, cost))
 
             # Retrieve the last inserted row's ID
             portfolio_id = cursor.lastrowid
             
-            cursor.execute('''SELECT price FROM asset_data WHERE portfolio_id = %s AND date = %s''', (portfolio_id,buy_datetime,))
-            action_price = cursor.fetchone()[0]
+            # create fake data for inserting into the asset_data table
+            cursor.execute('''INSERT INTO  asset_data 
+                           (asset_type, asset_ticker, asset_name, close_price, high_price, low_price, open_price,portfolio_id,date)
+                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''',
+                           (asset_type, asset_ticker, asset_name, closing_price, high_price, low_price, open_price,portfolio_id,buy_datetime))
+            
+            
             # Insert the transaction into the asset_transactions table
             cursor.execute('''INSERT INTO asset_transactions 
                               (asset_id, transaction_type, transaction_datetime, transaction_amount, transaction_price)
                               VALUES (%s, %s, %s, %s, %s)''',
-                           (portfolio_id, 'BUY', buy_datetime, amount_holding, action_price))  # Example transaction_price
+                           (portfolio_id, 'BUY', buy_datetime, amount_holding, closing_price))
 
             db.commit()
 
@@ -142,11 +181,11 @@ class AssetResource(Resource):
 
         with get_db() as db, db.cursor() as cursor:
             # Retrieve the current amount holding for the asset
-            cursor.execute('''SELECT amount_holding FROM portfolio WHERE id = %s''', (portfolio_id,))
-            current_amount_holding = cursor.fetchone()[0]
+            cursor.execute('''SELECT amount_holding,cost FROM portfolio WHERE id = %s''', (portfolio_id,))
+            current_amount_holding,cost = cursor.fetchone()
             
             # get the current price for the asset
-            cursor.execute('''SELECT price FROM asset_data WHERE portfolio_id = %s AND date = %s''', (portfolio_id,transaction_datetime,))
+            cursor.execute('''SELECT close_price FROM asset_data WHERE portfolio_id = %s AND date = %s''', (portfolio_id,transaction_datetime,))
             action_price = cursor.fetchone()[0]
             
             # get the current networth for the portfolio
@@ -156,12 +195,14 @@ class AssetResource(Resource):
             if transaction_type == "BUY":
                 # Calculate and update new amount holding
                 updated_amount_holding = current_amount_holding + transaction_amount
+                updated_cost = cost + transaction_amount * action_price
             elif transaction_type == "SELL":
                 if transaction_amount > current_amount_holding:
                     return {"error": "Not enough assets to sell"}, 400
                 else:
                     # Calculate and update new amount holding
                     updated_amount_holding = current_amount_holding - transaction_amount
+                    updated_cost = cost - transaction_amount * action_price
 
             # Insert the transaction into the asset_transactions table
             cursor.execute('''INSERT INTO asset_transactions 
@@ -171,13 +212,14 @@ class AssetResource(Resource):
             db.commit()
 
             # Update the portfolio's amount_holding after transaction
-            cursor.execute('''UPDATE portfolio SET amount_holding=%s WHERE id=%s''',
-                           (updated_amount_holding, portfolio_id))
+            cursor.execute('''UPDATE portfolio SET amount_holding=%s, cost=%s WHERE id=%s''',
+                           (updated_amount_holding,updated_cost, portfolio_id))
             db.commit()
 
             # Return a response indicating success
             return {"message": f"{transaction_type} transaction completed successfully, current amount holding:{updated_amount_holding}"}, 200
 
+    
 # remove the delete function since we cannot delete a portfolio item
 # since its id is using as a foreign key in the asset_data table
 # if sell all the shares of the asset, just set the amount_holding to 0

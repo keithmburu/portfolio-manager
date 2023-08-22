@@ -13,7 +13,8 @@ CREATE TABLE portfolio (
     buy_datetime DATETIME NOT NULL,
     mature_datetime DATETIME,
     currency VARCHAR(255),
-    performance FLOAT
+    performance FLOAT,
+    cost FLOAT NOT NULL
 );
 
 
@@ -49,12 +50,12 @@ CREATE TABLE asset_transactions (
 
 -- Insert into the portfolio table
 -- Insert TESLA stock data
-INSERT INTO portfolio (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency,performance)
-VALUES ('Stock', 'CVS', 'CVS Health Corporation', 100, '2023-08-11 00:00:00', NULL, 'USD', NULL),
-        ('Stock', 'TSLA', 'Tesla, Inc.', 50, '2023-08-11 00:00:00', NULL, 'USD', NULL),
-       ('Stock', 'GOOGL', 'Alphabet Inc.', 30, '2023-08-11 00:00:00', NULL, 'USD', NULL),
-       ('Stock', 'MS', 'Morgan Stanley', 75, '2023-08-11 00:00:00', NULL, 'USD', NULL),
-       ('Stock', 'WMT', 'Walmart Inc.', 40, '2023-08-11 00:00:00', NULL, 'USD', NULL);
+INSERT INTO portfolio (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency,performance,cost)
+VALUES ('Stock', 'CVS', 'CVS Health Corporation', 100, '2023-08-11 00:00:00', NULL, 'USD', NULL,8112),
+        ('Stock', 'TSLA', 'Tesla, Inc.', 50, '2023-08-11 00:00:00', NULL, 'USD', NULL,35840),
+       ('Stock', 'GOOGL', 'Alphabet Inc.', 30, '2023-08-11 00:00:00', NULL, 'USD', NULL, 3936),
+       ('Stock', 'MS', 'Morgan Stanley', 75, '2023-08-11 00:00:00', NULL, 'USD', NULL,7282.5),
+       ('Stock', 'WMT', 'Walmart Inc.', 40, '2023-08-11 00:00:00', NULL, 'USD', NULL,5648);
 
 -- Display the portfolio table
 SELECT * FROM portfolio;
