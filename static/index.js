@@ -1,26 +1,28 @@
-const apiUrl = 'http://localhost:5000';
+const apiUrl = 'http://localhost:5000/portfolio';
+const portfolioBody = document.getElementById('portfolioBody');
 const portfolioInfoElement = document.getElementById('portfolio-info');
 const networthChartElement = document.getElementById('networth-chart'); // Add an element to hold the chart
 
-// Function to fetch historical networth data
-async function fetchNetworthData() {
-    try {
-        const response = await fetch(apiUrl+'/'); // Change the URL to match your backend API URL
-        const data = await response.json();
-
-        const networthData = data.networth;
-
-        // Create arrays for chart data
-        const networthDates = networthData.map(item => new Date(item.date)); // Convert date strings to Date objects
-        const networthValues = networthData.map(item => item.networth);
-
-    } catch (error) {
-        console.error('Error fetching networth data:', error);
-    }
-}
-
-// Call the function to fetch and display networth data
-// fetchNetworthData();
+document.addEventListener('DOMContentLoaded', () => {
+    // Fetch portfolio data from the backend
+    fetch(apiUrl+'/')
+        .then(response => response.json())
+        .then(data => {
+            const portfolioContainer = document.getElementById('portfolio-container');
+            data.portfolio.forEach(asset => {
+                const assetDiv = document.createElement('div');
+                assetDiv.innerHTML = `
+                    <h2>${asset[3]}</h2>
+                    <p>Amount Holding: ${asset[4]}</p>
+                    <p>Profit: $${data.profit[asset[3]]}</p>
+                `;
+                portfolioContainer.appendChild(assetDiv);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+        });
+});
 
 /* 
 To be embedded in html:

@@ -18,15 +18,11 @@ def get_db():
     )
 
 
-class PortfolioResource(Resource):
-    # def get(self):
-    #     with get_db() as db, db.cursor() as cursor:
-    #         cursor.execute('''SELECT * FROM portfolio WHERE amount_holding > 0''')
-    #         portfolio = cursor.fetchall()
-    #         cursor.execute('''SELECT * FROM historical_networth''')
-    #         networth = cursor.fetchall()
-    #     return jsonify({"portfolio":portfolio, "networth":networth})
+class HomeResource(Resource):
+    def get(self):
+        return send_from_directory('static', 'index.html')
     
+class PortfolioResource(Resource):
     def get(self):
         with get_db() as db, db.cursor() as cursor:
             # Retrieve assets with positive amount holding
@@ -46,7 +42,6 @@ class PortfolioResource(Resource):
             networth = cursor.fetchall()
         
         return jsonify({"portfolio": portfolio, "networth": networth, "profit": profit})
-
 
 
     def post(self):
@@ -124,28 +119,28 @@ class PortfolioResource(Resource):
 
 
 
-class StocksResource(Resource):
-    def get(self):
-        with get_db() as db, db.cursor() as cursor:
-            cursor.execute('''SELECT * FROM portfolio WHERE asset_type = stock''')
-            stocks = cursor.fetchall()
-        return jsonify(stocks)
+# class StocksResource(Resource):
+#     def get(self):
+#         with get_db() as db, db.cursor() as cursor:
+#             cursor.execute('''SELECT * FROM portfolio WHERE asset_type = stock''')
+#             stocks = cursor.fetchall()
+#         return jsonify(stocks)
 
 
-class BondsResource(Resource):
-    def get(self):
-        with get_db() as db, db.cursor() as cursor:
-            cursor.execute('''SELECT * FROM portfolio WHERE asset_type = bond''')
-            bonds = cursor.fetchall()
-        return jsonify(bonds)
+# class BondsResource(Resource):
+#     def get(self):
+#         with get_db() as db, db.cursor() as cursor:
+#             cursor.execute('''SELECT * FROM portfolio WHERE asset_type = bond''')
+#             bonds = cursor.fetchall()
+#         return jsonify(bonds)
 
 
-class CashResource(Resource):
-    def get(self):
-        with get_db() as db, db.cursor() as cursor:
-            cursor.execute('''SELECT * FROM portfolio WHERE asset_type = cash''')
-            cash = cursor.fetchall()
-        return jsonify(cash)
+# class CashResource(Resource):
+#     def get(self):
+#         with get_db() as db, db.cursor() as cursor:
+#             cursor.execute('''SELECT * FROM portfolio WHERE asset_type = cash''')
+#             cash = cursor.fetchall()
+#         return jsonify(cash)
 
 
 class AssetResource(Resource):
@@ -249,12 +244,13 @@ class AssetResource(Resource):
     #     return {"message": "Removed asset from portfolio"}, 200
 
 
-    
-api.add_resource(PortfolioResource, '/')
-api.add_resource(StocksResource, '/stocks')
-api.add_resource(BondsResource, '/bonds')
-api.add_resource(CashResource, '/cash')
-api.add_resource(AssetResource, '/<int:portfolio_id>')
+ 
+api.add_resource(HomeResource, '/')   
+api.add_resource(PortfolioResource, '/portfolio')
+# api.add_resource(StocksResource, '/stocks')
+# api.add_resource(BondsResource, '/bonds')
+# api.add_resource(CashResource, '/cash')
+api.add_resource(AssetResource, '/portfolio/<int:portfolio_id>')
 
 
 if __name__ == '__main__':
