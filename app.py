@@ -24,31 +24,20 @@ class PortfolioResource(Resource):
             # Retrieve assets with positive amount holding
             cursor.execute('''SELECT * FROM portfolio WHERE amount_holding > 0''')
             portfolio = cursor.fetchall()
-            
+            profit = {}
             # Calculate profit for each asset
             for asset in portfolio:
                 # Retrieve the latest close price for the asset
                 cursor.execute('''SELECT close_price FROM asset_data WHERE portfolio_id = %s ORDER BY date DESC LIMIT 1''', (asset[0],))
                 latest_price_result = cursor.fetchone()[0]
+                # calculate the profit for the asset based on the latest close price and the amount_holding
+                profit[asset[3]] = float(latest_price_result)*asset[4] - float(asset[9])
                 
-                if latest_price_result:
-                    latest_price = latest_price_result
-                    
-                    cost = asset[9]
-                    amount_holding = asset[4]
-                    current_value = latest_price * amount_holding
-                    profit = current_value - cost
-                    
-                    asset = asset + (latest_price,)
-                    asset= asset + (profit,)
-                else:
-                    asset = asset + (None,)
-                    asset = asset + (None,)
             
             cursor.execute('''SELECT * FROM historical_networth''')
             networth = cursor.fetchall()
         
-        return jsonify({"portfolio": portfolio, "networth": networth})
+        return jsonify({"portfolio": portfolio, "networth": networth, "profit": profit})
 
 
 
