@@ -86,7 +86,7 @@ VALUES
     ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-22 00:00:00', 81.50, 82.30, 83.45, 81.30, 1),
     ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-23 00:00:00', 82.40, 82.80, 83.90, 82.00, 1),
     ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-24 00:00:00', 82.70, 82.60, 83.20, 82.40, 1),
-    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-25 00:00:00', 82.50, 82.80, 83.10, 82.30, 1);;
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-25 00:00:00', 82.50, 82.80, 83.10, 82.30, 1);
 
 -- Insert TESLA asset data
 INSERT INTO asset_data (asset_type, asset_ticker, asset_name, date, open_price, close_price, high_price, low_price,portfolio_id)
