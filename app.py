@@ -1,5 +1,5 @@
 from dateutil import parser as dateparser
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
 from flask_restful import Resource, Api, reqparse
 import mysql.connector
 from flask_cors import CORS 
@@ -18,13 +18,16 @@ def get_db():
 
 
 class PortfolioResource(Resource):
+    # def get(self):
+    #     with get_db() as db, db.cursor() as cursor:
+    #         cursor.execute('''SELECT * FROM portfolio WHERE amount_holding > 0''')
+    #         portfolio = cursor.fetchall()
+    #         cursor.execute('''SELECT * FROM historical_networth''')
+    #         networth = cursor.fetchall()
+    #     return jsonify({"portfolio":portfolio, "networth":networth})
+    
     def get(self):
-        with get_db() as db, db.cursor() as cursor:
-            cursor.execute('''SELECT * FROM portfolio WHERE amount_holding > 0''')
-            portfolio = cursor.fetchall()
-            cursor.execute('''SELECT * FROM historical_networth''')
-            networth = cursor.fetchall()
-        return jsonify({"portfolio":portfolio, "networth":networth})
+        return send_from_directory('static', 'index.html')
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -69,8 +72,9 @@ class PortfolioResource(Resource):
 
             # Retrieve the last inserted row's ID
             portfolio_id = cursor.lastrowid
+            db.commit()
             
-            cursor.execute('''SELECT price FROM asset_data WHERE portfolio_id = %s AND date = %s''', (portfolio_id,buy_datetime,))
+            cursor.execute('''SELECT close_price FROM asset_data WHERE portfolio_id = %s AND date = %s''', (portfolio_id,buy_datetime,))
             action_price = cursor.fetchone()[0]
             # Insert the transaction into the asset_transactions table
             cursor.execute('''INSERT INTO asset_transactions 
