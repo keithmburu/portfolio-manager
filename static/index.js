@@ -1,4 +1,4 @@
-const apiUrl = 'http://localhost:5000';
+const apiUrl = 'http://localhost:5000/portfolio';
 const portfolioInfoElement = document.getElementById('portfolio-info');
 const networthChartElement = document.getElementById('networth-chart'); // Add an element to hold the chart
 
