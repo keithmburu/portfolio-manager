@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <title>Portfolio Manager</title>
+        <meta name='viewport' content='width=device-width, initial-scale=1'>
+        <script src='static/index.js'></script>
+    </head>
+    <body>
+        <div id="assets">
+            <button onclick="toggleFormVisibility()">Add asset</button>
+        </div>
+        <form id="newAssetForm" style="visibility:hidden" onsubmit="newAsset()" >
+            <p>Select Asset Type</p>
+            <select id="assetType">
+                <option value="Stock" selected>Stock</option>
+                <option value="Bond">Bond</option>
+                <option value="Cash">Cash</option>
+            </select>
+            <p>Enter Asset Ticker</p><input type="text" id="assetTicker">
+            <p>Enter Asset Name</p><input type="text" id="assetName">
+            <p>Enter Amount</p><input type="text" id="amountHolding">
+            <p>Enter Maturity Date</p>
+            <input type="datetime-local" id="matureDateTime">
+            <p>Select Currency</p>
+            <select id="currency">
+                <option value="USD" selected>USD</option>
+                <option value="CAD">CAD</option>
+            </select>
+            <br><br>
+            <button type="submit">Submit</button>
+        </form>
+    </body>
+</html>
