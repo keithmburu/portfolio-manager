@@ -1,3 +1,27 @@
+const apiUrl = 'http://localhost:5000';
+const portfolioInfoElement = document.getElementById('portfolio-info');
+const networthChartElement = document.getElementById('networth-chart'); // Add an element to hold the chart
+
+// Function to fetch historical networth data
+async function fetchNetworthData() {
+    try {
+        const response = await fetch(apiUrl+'/'); // Change the URL to match your backend API URL
+        const data = await response.json();
+
+        const networthData = data.networth;
+
+        // Create arrays for chart data
+        const networthDates = networthData.map(item => new Date(item.date)); // Convert date strings to Date objects
+        const networthValues = networthData.map(item => item.networth);
+
+    } catch (error) {
+        console.error('Error fetching networth data:', error);
+    }
+}
+
+// Call the function to fetch and display networth data
+fetchNetworthData();
+
 /* 
 To be embedded in html:
 <div id="assets">

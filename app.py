@@ -2,10 +2,11 @@ from dateutil import parser as dateparser
 from flask import Flask, jsonify
 from flask_restful import Resource, Api, reqparse
 import mysql.connector
+from flask_cors import CORS 
 
 app = Flask(__name__)
 api = Api(app)
-
+CORS(app)
 
 def get_db():
     return mysql.connector.connect(
