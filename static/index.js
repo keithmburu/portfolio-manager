@@ -174,19 +174,12 @@ async function transaction(id, transaction_type, assetData) {
                     console.error('Error fetching latest price:', error);
                 });
 
-    const currentDateTime = new Date();
-
-    // Extract date and time components
-    const year = currentDateTime.getFullYear();
-    const month = String(currentDateTime.getMonth() + 1).padStart(2, '0'); // Month is 0-based
-    const day = String(currentDateTime.getDate()).padStart(2, '0');
-    const formattedDateTime = `${year}-${month}-${day} 00:00:00`;
-    
+    const currentDateTime = new Date().toISOString();
     const transactionData = {
         transaction_type: transaction_type, 
         transaction_amount: transaction_amount,
         transaction_price: transaction_price, 
-        transaction_datetime: formattedDateTime,
+        transaction_datetime: currentDateTime,
     };
     try {
         const response = await fetch(`${apiUrl}/${id}`, {
