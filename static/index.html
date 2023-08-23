@@ -4,6 +4,7 @@
         <meta charset='utf-8'>
         <title>Portfolio Manager</title>
         <meta name='viewport' content='width=device-width, initial-scale=1'>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.3/dist/chart.umd.min.js"></script>
         <script src='/static/index.js'></script>
     </head>
 
@@ -15,6 +16,11 @@
         <div id="assets">
           <button onclick="toggleFormVisibility()">Add asset</button>
         </div>
+        <div style="display: inline-block;position: relative;
+        width: 50%;">
+          <canvas id="networth-chart"></canvas>
+        </div>
+
         <form id="newAssetForm" style="visibility:hidden" onsubmit="newAsset()" >
             <p>Select Asset Type</p>
             <select id="assetType">
@@ -35,7 +41,6 @@
             <br><br>
             <button type="submit">Submit</button>
         </form>
-
 
   <div class="container">
     <h1>Portfolio</h1>
