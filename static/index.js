@@ -73,9 +73,8 @@ async function newAsset() {
             body: JSON.stringify(assetData)
         });
         const data = await response.json();
-        console.log(data.message);
         if (data.message) {
-            window.alert(data.message);
+            console.log(data.message);
             const assetInfoDiv = document.createElement('div'); 
             const assetUpdateDiv = document.createElement('div'); 
             assetInfoDiv.id = `assetInfo${id}`;
@@ -151,7 +150,7 @@ async function transaction(id, transaction_type) {
         });
         const data = await response.json();
         if (data.message) {
-            window.alert(data.message)
+            console.log(data.message)
             const assetInfoDiv = document.getElementById(`assetInfo${id}`); 
             assetInfoDiv.innerHTML = `
                 <p><strong> ${assetData.asset_name} ${assetData.asset_ticker? 
