@@ -12,10 +12,28 @@
         <div id="portfolio-container"></div>
         
         <div id="assets">
-            <button onclick="toggleFormVisibility()">Add asset</button>
-
-            
+          <button onclick="toggleFormVisibility()">Add asset</button>
         </div>
+        <form id="newAssetForm" style="visibility:hidden" onsubmit="newAsset()" >
+            <p>Select Asset Type</p>
+            <select id="assetType">
+                <option value="Stock" selected>Stock</option>
+                <option value="Bond">Bond</option>
+                <option value="Cash">Cash</option>
+            </select>
+            <p>Enter Asset Ticker</p><input type="text" id="assetTicker">
+            <p>Enter Asset Name</p><input type="text" id="assetName">
+            <p>Enter Amount</p><input type="text" id="amountHolding">
+            <p>Enter Maturity Date</p>
+            <input type="datetime-local" id="matureDateTime">
+            <p>Select Currency</p>
+            <select id="currency">
+                <option value="USD" selected>USD</option>
+                <option value="CAD">CAD</option>
+            </select>
+            <br><br>
+            <button type="submit">Submit</button>
+        </form>
 
 
   <div class="container">
@@ -197,8 +215,6 @@
   <div>
     <b><h4>Historical Net Worth: $</h4></b>
   </div>
-  
-  <script src="index.js" async defer />
 
   </body>
  

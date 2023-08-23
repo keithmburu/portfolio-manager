@@ -5,6 +5,7 @@ from flask_restful import Resource, Api, reqparse
 import mysql.connector
 from flask_cors import CORS 
 from datetime import datetime
+from datetime import datetime
 
 app = Flask(__name__)
 api = Api(app)
@@ -155,7 +156,7 @@ class AssetResource(Resource):
             portfolio = cursor.fetchone()
             cursor.execute('''SELECT close_price FROM asset_data WHERE portfolio_id = %s ORDER BY DATEDIFF(date, %s) ASC LIMIT 1''', (portfolio_id, datetime.now()))
             nearest_price = cursor.fetchone()[0]
-            
+
         return jsonify({"portfolio":portfolio, "assets":asset,"transactions": transactions,"nearest_price":nearest_price})
 
     # put with the assumption

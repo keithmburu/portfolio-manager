@@ -87,6 +87,7 @@ async function getAssets() {
         console.error('Error fetching data:', error);
     }
 }
+
 /* 
 To be embedded in html:
 <div id="assets">
@@ -134,33 +135,8 @@ async function newAsset() {
             body: JSON.stringify(assetData)
         });
         const data = await response.json();
-        console.log(data.message);
         if (data.message) {
-            window.alert(data.message);
-            const assetInfoDiv = document.createElement('div'); 
-            const assetUpdateDiv = document.createElement('div'); 
-            assetInfoDiv.id = `assetInfo${id}`;
-            assetUpdateDiv.id = `assetUpdate${id}`; 
-            assetInfoDiv.innerHTML = `
-                <p><strong> ${assetData.asset_name} ${assetData.asset_ticker? 
-                assetData.asset_ticker: ""}</strong></p>
-                <p>${assetData.asset_type != "Stock"? assetData.currency : ""} 
-                ${assetData.amount_holding} ${assetData.asset_type == "Stock"? "shares" : ""}</p>
-            `
-            assetUpdateDiv.innerhtml = `
-                <div>
-                    <button onclick="transaction(${id}, 'BUY')">Buy</button>
-                    <input type="text" id="buyAmount${id}" value=0>Amount</input>
-                </div>
-                <div>
-                    <button onclick="transaction(${id}, 'SELL')">Sell</button>
-                    <input type="text" id="sellAmount${id}" value=0>Amount</input>
-                </div>
-            `; 
-            document.getElementById(`assetType${id}`).value = assetData.asset_type
-            const assetsDiv = document.getElementById('assets')
-            assetsDiv.appendChild(assetInfoDiv);
-            assetsDiv.appendChild(assetUpdateDiv);
+            console.log(data.message);
         } else if (data.error) {
             window.alert(data.error);
         }
@@ -224,12 +200,12 @@ async function transaction(id, transaction_type, assetData) {
         if (data.message) {
             window.alert(data.message)
             const assetInfoDiv = document.getElementById(`assetInfo${id}`); 
-            // assetInfoDiv.innerHTML = `
-            //     <p><strong> ${assetData[3]} ${assetData[2]? 
-            //     assetData[2]: ""}</strong></p>
-            //     <p>${assetData[1] != "Stock"? assetData[7] : ""} 
-            //     ${assetData[4]} ${assetData[1] == "Stock"? "shares" : ""}</p>
-            // `
+            assetInfoDiv.innerHTML = `
+                <p><strong> ${assetData.asset_name} ${assetData.asset_ticker? 
+                assetData.asset_ticker: ""}</strong></p>
+                <p>${assetData.asset_type != "Stock"? assetData.currency : ""} 
+                ${assetData.amount_holding} ${assetData.asset_type == "Stock"? "shares" : ""}</p>
+            `
             getAssets();
         } else if (data.error) {
             window.alert(data.error);
