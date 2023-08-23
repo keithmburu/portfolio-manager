@@ -136,30 +136,6 @@ async function newAsset() {
         const data = await response.json();
         if (data.message) {
             console.log(data.message);
-            const assetInfoDiv = document.createElement('div'); 
-            const assetUpdateDiv = document.createElement('div'); 
-            assetInfoDiv.id = `assetInfo${id}`;
-            assetUpdateDiv.id = `assetUpdate${id}`; 
-            assetInfoDiv.innerHTML = `
-                <p><strong> ${assetData.asset_name} ${assetData.asset_ticker? 
-                assetData.asset_ticker: ""}</strong></p>
-                <p>${assetData.asset_type != "Stock"? assetData.currency : ""} 
-                ${assetData.amount_holding} ${assetData.asset_type == "Stock"? "shares" : ""}</p>
-            `
-            assetUpdateDiv.innerhtml = `
-                <div>
-                    <button onclick="transaction(${id}, 'BUY')">Buy</button>
-                    <input type="text" id="buyAmount${id}" value=0>Amount</input>
-                </div>
-                <div>
-                    <button onclick="transaction(${id}, 'SELL')">Sell</button>
-                    <input type="text" id="sellAmount${id}" value=0>Amount</input>
-                </div>
-            `; 
-            document.getElementById(`assetType${id}`).value = assetData.asset_type
-            const assetsDiv = document.getElementById('assets')
-            assetsDiv.appendChild(assetInfoDiv);
-            assetsDiv.appendChild(assetUpdateDiv);
         } else if (data.error) {
             window.alert(data.error);
         }
@@ -212,13 +188,6 @@ async function transaction(id, transaction_type) {
         const data = await response.json();
         if (data.message) {
             console.log(data.message)
-            const assetInfoDiv = document.getElementById(`assetInfo${id}`); 
-            assetInfoDiv.innerHTML = `
-                <p><strong> ${assetData.asset_name} ${assetData.asset_ticker? 
-                assetData.asset_ticker: ""}</strong></p>
-                <p>${assetData.asset_type != "Stock"? assetData.currency : ""} 
-                ${assetData.amount_holding} ${assetData.asset_type == "Stock"? "shares" : ""}</p>
-            `
             getAssets();
         } else if (data.error) {
             window.alert(data.error);
