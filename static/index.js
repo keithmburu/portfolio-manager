@@ -3,7 +3,7 @@ const portfolioBody = document.getElementById('portfolioBody');
 const portfolioInfoElement = document.getElementById('portfolio-info');
 const networthChartElement = document.getElementById('networth-chart'); // Add an element to hold the chart
 
-document.addEventListener('DOMContentLoaded', () => getAssets());
+document.addEventListener('DOMContentLoaded', () => {getAssets(); chartNetWorth();});
 
 async function getAssets() {
     try {
@@ -191,12 +191,42 @@ async function transaction(id, transaction_type, assetData) {
         });
         const data = await response.json();
         if (data.message) {
-            window.alert(data.message)
+            console.log(data.message)
             getAssets();
         } else if (data.error) {
             window.alert(data.error);
         }
     } catch(error) {
         console.error('Error buying/selling asset:', error);
+    }
+}
+
+async function chartNetWorth() {
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        console.log(data.networth[0]);
+        const dates = data.networth.map(entry => entry[1].slice(5,-13));
+        const networth = data.networth.map(entry => entry[2]);
+        console.log(dates, networth);
+        let networthChartElement = document.getElementById('networth-chart');
+        const networthChart = new Chart(networthChartElement, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'Net Worth',
+                    data: networth,
+                    fill:true,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)'
+                }]
+            },
+            options: {
+                responsive: true,
+            }       
+        });
+    } catch(error) {
+        console.error('Error fetching data:', error);
     }
 }
