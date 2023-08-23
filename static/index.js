@@ -3,7 +3,9 @@ const portfolioBody = document.getElementById('portfolioBody');
 const portfolioInfoElement = document.getElementById('portfolio-info');
 const networthChartElement = document.getElementById('networth-chart'); // Add an element to hold the chart
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => getAssets());
+
+async function getAssets() {
     // Fetch portfolio data from the backend
     fetch(apiUrl+'/')
         .then(response => response.json())
@@ -22,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(error => {
             console.error('Error fetching data:', error);
         });
-});
+}
 
 /* 
 To be embedded in html:
@@ -136,7 +138,7 @@ async function transaction(id, transaction_type) {
     const transactionData = {
         transaction_type: transaction_type, 
         transaction_amount: transaction_amount,
-        transaction_price: transaction_amount, // need to get price from API
+        transaction_price: transaction_price, 
         transaction_datetime: Date(),
     };
     try {
@@ -157,6 +159,7 @@ async function transaction(id, transaction_type) {
                 <p>${assetData.asset_type != "Stock"? assetData.currency : ""} 
                 ${assetData.amount_holding} ${assetData.asset_type == "Stock"? "shares" : ""}</p>
             `
+            getAssets();
         } else if (data.error) {
             window.alert(data.error);
         }
