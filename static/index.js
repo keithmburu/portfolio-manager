@@ -3,26 +3,83 @@ const portfolioBody = document.getElementById('portfolioBody');
 const portfolioInfoElement = document.getElementById('portfolio-info');
 const networthChartElement = document.getElementById('networth-chart'); // Add an element to hold the chart
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Fetch portfolio data from the backend
-    fetch(apiUrl+'/')
-        .then(response => response.json())
-        .then(data => {
-            const portfolioContainer = document.getElementById('portfolio-container');
-            data.portfolio.forEach(asset => {
-                const assetDiv = document.createElement('div');
-                assetDiv.innerHTML = `
-                    <h2>${asset[3]}</h2>
-                    <p>Amount Holding: ${asset[4]}</p>
-                    <p>Profit: $${data.profit[asset[3]]}</p>
-                `;
-                portfolioContainer.appendChild(assetDiv);
-            });
-        })
-        .catch(error => {
-            console.error('Error fetching data:', error);
+document.addEventListener('DOMContentLoaded', () => getAssets());
+
+async function getAssets() {
+    try {
+        // Fetch portfolio data from the backend
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        const portfolioContainer = document.getElementById('portfolio-container');
+        portfolioContainer.innerHTML = '';
+
+        // Create table element
+        const table = document.createElement('table');
+        table.className = 'custom-table';
+
+        // Create table header row
+        const headerRow = document.createElement('tr');
+        ['Asset Name', 'Asset Type', 'Amount Holding', 'Cost', 'Profit', 'Action'].forEach(headerText => {
+            const headerCell = document.createElement('th');
+            headerCell.textContent = headerText;
+            headerRow.appendChild(headerCell);
         });
-});
+        table.appendChild(headerRow);
+
+        data.portfolio.forEach(asset => {
+            // Create table row
+            const row = document.createElement('tr');
+
+            // Asset Name
+            const assetNameCell = document.createElement('td');
+            assetNameCell.textContent = asset[3];
+            row.appendChild(assetNameCell);
+
+            // Asset type
+            const assetTypeCell = document.createElement('td');
+            assetTypeCell.textContent = asset[1];
+            row.appendChild(assetTypeCell);
+
+            // Amount Holding
+            const amountHoldingCell = document.createElement('td');
+            amountHoldingCell.textContent = asset[4];
+            row.appendChild(amountHoldingCell);
+
+            // Cost
+            const costCell = document.createElement('td');
+            costCell.textContent = `$${asset[9]}`;
+            row.appendChild(costCell);
+
+            // Profit
+            const profitCell = document.createElement('td');
+            profitCell.textContent = `$${data.profit[asset[3]]}`;
+            row.appendChild(profitCell);
+
+            // Action
+            const actionCell = document.createElement('td');
+            const buyInput = document.createElement('input');
+            buyInput.type = 'text';
+            buyInput.id = `buyAmount${asset[0]}`;
+            buyInput.value = 0;
+            const buyButton = document.createElement('button');
+            buyButton.textContent = 'Buy';
+            buyButton.onclick = () => transaction(asset[0], 'BUY');
+            const sellInput = document.createElement('input');
+            sellInput.type = 'text';
+            sellInput.id = `sellAmount${asset[0]}`;
+            sellInput.value = 0;
+            const sellButton = document.createElement('button');
+            sellButton.textContent = 'Sell';
+            sellButton.onclick = () => transaction(asset[0], 'SELL');
+            actionCell.appendChild(buyInput);
+            actionCell.appendChild(buyButton);
+            actionCell.appendChild(sellInput);
+            actionCell.appendChild(sellButton);
+            row.appendChild(actionCell);
+
+            table.appendChild(row);
+        });
 
         // Append table to container
         portfolioContainer.appendChild(table);
@@ -30,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.error('Error fetching data:', error);
     }
 }
+
 /* 
 To be embedded in html:
 <div id="assets">
@@ -80,10 +138,10 @@ async function newAsset() {
         if (data.message) {
             console.log(data.message);
         } else if (data.error) {
-            console.log(data.error);
+            window.alert(data.error);
         }
     } catch(error) {
-        console.error('Network error creating asset:', error);
+        console.error('Error creating asset:', error);
     }
 }
 
@@ -98,18 +156,26 @@ function toggleFormVisibility() {
 }
 
 async function transaction(id, transaction_type) {
-    console.log("transaction");
     let transaction_amount = 0;
     if (transaction_type == "BUY") {
         transaction_amount = document.getElementById(`buyAmount${id}`).value;
     } else {
         transaction_amount = document.getElementById(`sellAmount${id}`).value;
     }
+    let transaction_price = await fetch(`${apiUrl}/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Latest Price:', data.nearest_price);
+                    return data.nearest_price;
+                })
+                .catch(error => {
+                    console.error('Error fetching latest price:', error);
+                });
     const transactionData = {
         transaction_type: transaction_type, 
         transaction_amount: transaction_amount,
-        transaction_price: transaction_amount, // need to get price from API
-        transaction_datetime: Date(),
+        transaction_price: transaction_price, 
+        transaction_datetime: new Date().toISOString(),
     };
     try {
         const response = await fetch(`${apiUrl}/${id}`, {
@@ -121,19 +187,12 @@ async function transaction(id, transaction_type) {
         });
         const data = await response.json();
         if (data.message) {
-            window.alert(data.message)
-            const assetInfoDiv = document.getElementById(`assetInfo${id}`); 
-            assetInfoDiv.innerHTML = `
-                <p><strong> ${assetData.asset_name} ${assetData.asset_ticker? 
-                assetData.asset_ticker: ""}</strong></p>
-                <p>${assetData.asset_type != "Stock"? assetData.currency : ""} 
-                ${assetData.amount_holding} ${assetData.asset_type == "Stock"? "shares" : ""}</p>
-            `
+            console.log(data.message)
+            getAssets();
         } else if (data.error) {
-            console.log(data.error);
+            window.alert(data.error);
         }
-        getAssets();
     } catch(error) {
-        console.error('Network error buying/selling asset:', error);
+        console.error('Error buying/selling asset:', error);
     }
 }
