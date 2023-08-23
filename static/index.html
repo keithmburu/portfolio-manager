@@ -10,19 +10,13 @@
 
     <body>
         
-        <div id="portfolio-container"></div>
-        <div id="networth-container"></div>
-        
-        <div id="stocks">
-          <br><br>
-          <button onclick="toggleFormVisibility()">Add stock</button>
-          <br><br>
-        </div>
-        <div style="display: inline-block;position: relative;
-        width: 50%;">
+        <div style="width: 50%;">
           <canvas id="networth-chart"></canvas>
         </div>
-
+        <div id="portfolio-container"></div>
+        <div id="networth-container"></div>
+        <button onclick="toggleFormVisibility()">Add stock</button>
+        
         <form id="newStockForm" style="visibility:hidden" onsubmit="newStock()" >
             <p>Enter Stock Ticker</p><input type="text" id="stockTicker">
             <p>Enter Stock Name</p><input type="text" id="stockName">

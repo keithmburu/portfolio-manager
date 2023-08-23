@@ -123,7 +123,6 @@ function toggleFormVisibility() {
     if (form.style.visibility == "visible") {
         form.style.visibility = "hidden";
     } else {
-        document.getElementById("matureDateTime").value = new Date().toISOString();
         form.style.visibility = "visible";
     }
 }
@@ -179,10 +178,8 @@ async function chartNetWorth() {
     try {
         const response = await fetch(apiUrl);
         const data = await response.json();
-        console.log(data.networth[0]);
         const dates = data.networth.map(entry => entry[1].slice(5,-13));
         const networth = data.networth.map(entry => entry[2]);
-        console.log(dates, networth);
         let networthChartElement = document.getElementById('networth-chart');
         const networthChart = new Chart(networthChartElement, {
             type: 'line',
