@@ -80,6 +80,9 @@ class PortfolioResource(Resource):
             mature_datetime = None
 
         currency = args["currency"].upper() if args["currency"] else None
+        # get the current networth for the portfolio
+        cursor.execute('''SELECT networth FROM historical_networth WHERE date = %s''', (buy_datetime,))
+        networth = cursor.fetchone()[0]
 
         # randomly generate some price for inserting into tables
         closing_price = round(random.uniform(10, 100), 2)
@@ -89,6 +92,7 @@ class PortfolioResource(Resource):
         
         cost = amount_holding * closing_price
         
+        updated_networth = networth + cost
         with get_db() as db, db.cursor() as cursor:
             cursor.execute('''INSERT INTO portfolio 
                           (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency, cost)
@@ -114,6 +118,9 @@ class PortfolioResource(Resource):
 
             db.commit()
 
+            cursor.execute('''UPDATE historical_networth SET networth=%s WHERE date=%s''',
+                           (updated_networth, buy_datetime))
+            db.commit()
         resource_url = api.url_for(AssetResource, portfolio_id=portfolio_id, _external=True)
         insert_ok = ({"message": "Added new asset to portfolio"}, 201, {"Location": f"{resource_url}"})
         insert_failed = ({"error": "Failed to add new asset to portfolio"}, 400)
@@ -194,6 +201,7 @@ class AssetResource(Resource):
                 # Calculate and update new amount holding
                 updated_amount_holding = current_amount_holding + transaction_amount
                 updated_cost = cost + transaction_amount * action_price
+                updated_networth = networth + transaction_amount * action_price
             elif transaction_type == "SELL":
                 if transaction_amount > current_amount_holding:
                     return {"error": "Not enough assets to sell"}, 400
@@ -201,6 +209,7 @@ class AssetResource(Resource):
                     # Calculate and update new amount holding
                     updated_amount_holding = current_amount_holding - transaction_amount
                     updated_cost = cost - transaction_amount * action_price
+                    updated_networth = networth - transaction_amount * action_price
 
             # Insert the transaction into the asset_transactions table
             cursor.execute('''INSERT INTO asset_transactions 
@@ -213,6 +222,11 @@ class AssetResource(Resource):
             cursor.execute('''UPDATE portfolio SET amount_holding=%s, cost=%s WHERE id=%s''',
                            (updated_amount_holding,updated_cost, portfolio_id))
             db.commit()
+            
+            cursor.execute('''UPDATE historical_networth SET networth=%s WHERE date=%s''',
+                           (updated_networth, transaction_datetime))
+            db.commit()
+                           
 
             # Return a response indicating success
             return {"message": f"{transaction_type} transaction completed successfully, current amount holding:{updated_amount_holding}"}, 200
