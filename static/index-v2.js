@@ -3,18 +3,31 @@ const portfolioBody = document.getElementById('portfolioBody');
 const portfolioInfoElement = document.getElementById('portfolio-info');
 const networthChartElement = document.getElementById('networth-chart'); // Add an element to hold the chart
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => getAssets());
+
+async function getAssets() {
     // Fetch portfolio data from the backend
-    fetch(apiUrl+'/')
+    fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
             const portfolioContainer = document.getElementById('portfolio-container');
+            portfolioContainer.innerHTML = '';
             data.portfolio.forEach(asset => {
                 const assetDiv = document.createElement('div');
                 assetDiv.innerHTML = `
                     <h2>${asset[3]}</h2>
                     <p>Amount Holding: ${asset[4]}</p>
                     <p>Profit: $${data.profit[asset[3]]}</p>
+                    <div>Action
+                    </div>
+                    <div>
+                        <input type="text" id="buyAmount${asset[0]}" value=0>
+                        <button onclick="transaction(${asset[0]}, 'BUY')">Buy</button>
+                    </div>
+                    <div>
+                        <input type="text" id="sellAmount${asset[0]}" value=0>
+                        <button onclick="transaction(${asset[0]}, 'SELL')">Sell</button>
+                    </div>
                 `;
                 portfolioContainer.appendChild(assetDiv);
             });
@@ -22,14 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(error => {
             console.error('Error fetching data:', error);
         });
-});
-
-        // Append table to container
-        portfolioContainer.appendChild(table);
-    } catch (error) {
-        console.error('Error fetching data:', error);
-    }
 }
+
 /* 
 To be embedded in html:
 <div id="assets">
@@ -77,6 +84,7 @@ async function newAsset() {
             body: JSON.stringify(assetData)
         });
         const data = await response.json();
+        console.log(data.message);
         if (data.message) {
             console.log(data.message);
         } else if (data.error) {
@@ -105,11 +113,20 @@ async function transaction(id, transaction_type) {
     } else {
         transaction_amount = document.getElementById(`sellAmount${id}`).value;
     }
+    fetch(`${apiUrl}/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Latest Price:', data.nearest_price);
+                    transaction_price = data.nearest_price;
+                })
+                .catch(error => {
+                    console.error('Error fetching latest price:', error);
+                });
     const transactionData = {
         transaction_type: transaction_type, 
         transaction_amount: transaction_amount,
-        transaction_price: transaction_amount, // need to get price from API
-        transaction_datetime: Date(),
+        transaction_price: transaction_price, // need to get price from API
+        transaction_datetime: new Date().toISOString(),
     };
     try {
         const response = await fetch(`${apiUrl}/${id}`, {
@@ -121,14 +138,7 @@ async function transaction(id, transaction_type) {
         });
         const data = await response.json();
         if (data.message) {
-            window.alert(data.message)
-            const assetInfoDiv = document.getElementById(`assetInfo${id}`); 
-            assetInfoDiv.innerHTML = `
-                <p><strong> ${assetData.asset_name} ${assetData.asset_ticker? 
-                assetData.asset_ticker: ""}</strong></p>
-                <p>${assetData.asset_type != "Stock"? assetData.currency : ""} 
-                ${assetData.amount_holding} ${assetData.asset_type == "Stock"? "shares" : ""}</p>
-            `
+            console.log(data.message)
         } else if (data.error) {
             console.log(data.error);
         }
