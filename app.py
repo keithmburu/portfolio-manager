@@ -4,7 +4,9 @@ from flask import Flask, jsonify, send_from_directory
 from flask_restful import Resource, Api, reqparse
 import mysql.connector
 from flask_cors import CORS 
-from datetime import datetime
+from datetime import datetime, timedelta
+import yfinance as yf
+from decimal import Decimal
 
 app = Flask(__name__)
 api = Api(app)
@@ -61,13 +63,22 @@ class PortfolioResource(Resource):
             buy_datetime = dateparser.parse(args["buy_datetime"])
             buy_datetime = buy_datetime.replace(hour=0, minute=0, second=0, microsecond=0)
         except Exception as e:
-            return {"error": "Invalid buy_datetime format"}, 400        
+            return {"error": "Invalid buy_datetime format"}, 400
 
-        # randomly generate some price for inserting into tables
-        closing_price = round(random.uniform(10, 100), 2)
-        high_price = round(closing_price * random.uniform(1.01, 1.1), 2)
-        low_price = round(closing_price * random.uniform(0.9, 0.99), 2)
-        open_price = round(random.uniform(low_price, high_price), 2)
+        # fetch the latest close price for the asset with yahoo api
+        stock = yf.Ticker(asset_ticker)
+        yahoo_buy_date = buy_datetime.strftime('%Y-%m-%d')
+        next_date = buy_datetime + timedelta(days=1)
+        yahoo_next_date = next_date.strftime('%Y-%m-%d')
+        historical_data = stock.history(start=yahoo_buy_date, end=yahoo_next_date)
+        print(historical_data)
+        # Check if data is available for the target date
+        if not historical_data.empty:
+            closing_price = float(historical_data['Close'].values[0])
+            high_price = float(historical_data['High'].values[0])
+            low_price = float(historical_data['Low'].values[0])
+            open_price = float(historical_data['Open'].values[0])
+
         
         cost = amount_holding * closing_price
         
