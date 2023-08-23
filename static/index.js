@@ -113,11 +113,11 @@ async function transaction(id, transaction_type) {
     } else {
         transaction_amount = document.getElementById(`sellAmount${id}`).value;
     }
-    fetch(`${apiUrl}/${id}`)
+    let transaction_price = await fetch(`${apiUrl}/${id}`)
                 .then(response => response.json())
                 .then(data => {
                     console.log('Latest Price:', data.nearest_price);
-                    transaction_price = data.nearest_price;
+                    return data.nearest_price;
                 })
                 .catch(error => {
                     console.error('Error fetching latest price:', error);
