@@ -3,11 +3,11 @@ const portfolioBody = document.getElementById('portfolioBody');
 const portfolioInfoElement = document.getElementById('portfolio-info');
 const networthChartElement = document.getElementById('networth-chart'); // Add an element to hold the chart
 
-document.addEventListener('DOMContentLoaded', () => getAssets());
+document.addEventListener('DOMContentLoaded', () => getStocks());
 document.addEventListener('DOMContentLoaded', () => displayNetWorth());
 document.addEventListener('DOMContentLoaded', () => chartNetWorth());
 
-async function getAssets() {
+async function getStocks() {
     try {
         // Fetch portfolio data from the backend
         const response = await fetch(apiUrl);
@@ -22,58 +22,59 @@ async function getAssets() {
 
         // Create table header row
         const headerRow = document.createElement('tr');
-        ['Asset Name', 'Asset Type', 'Amount Holding', 'Cost', 'Profit', 'Action'].forEach(headerText => {
+        ['Stock Ticker', 'Stock Name', 'Amount Holding', 'Cost', 'Profit', 'Action'].forEach(headerText => {
             const headerCell = document.createElement('th');
             headerCell.textContent = headerText;
             headerRow.appendChild(headerCell);
         });
         table.appendChild(headerRow);
 
-        data.portfolio.forEach(asset => {
+        data.portfolio.forEach(stock => {
             // Create table row
             const row = document.createElement('tr');
 
-            // Asset Name
-            const assetNameCell = document.createElement('td');
-            assetNameCell.textContent = asset[3];
-            row.appendChild(assetNameCell);
+            // Stock Ticker
+            const stockTickerCell = document.createElement('td');
+            stockTickerCell.textContent = stock[1];
+            row.appendChild(stockTickerCell);
 
-            // Asset type
-            const assetTypeCell = document.createElement('td');
-            assetTypeCell.textContent = asset[1];
-            row.appendChild(assetTypeCell);
+            // Stock Name
+            const stockNameCell = document.createElement('td');
+            stockNameCell.textContent = stock[2];
+            row.appendChild(stockNameCell);
 
             // Amount Holding
             const amountHoldingCell = document.createElement('td');
-            amountHoldingCell.textContent = asset[4];
+            amountHoldingCell.textContent = stock[3];
             row.appendChild(amountHoldingCell);
 
             // Cost
             const costCell = document.createElement('td');
-            costCell.textContent = `$${asset[9]}`;
+            costCell.textContent = `$${stock[6]}`;
             row.appendChild(costCell);
 
             // Profit
             const profitCell = document.createElement('td');
-            profitCell.textContent = `$${data.profit[asset[3]].toFixed(2)}`;
+            profitCell.textContent = `$${data.profit[stock[2]].toFixed(2)}`;
             row.appendChild(profitCell);
 
             // Action
             const actionCell = document.createElement('td');
             const buyInput = document.createElement('input');
             buyInput.type = 'text';
-            buyInput.id = `buyAmount${asset[0]}`;
+            buyInput.id = `buyAmount${stock[0]}`;
             buyInput.value = 0;
             const buyButton = document.createElement('button');
             buyButton.textContent = 'Buy';
-            buyButton.onclick = () => transaction(asset[0], 'BUY',asset);
+            buyButton.onclick = () => transaction(stock[0], 'BUY',stock);
             const sellInput = document.createElement('input');
             sellInput.type = 'text';
-            sellInput.id = `sellAmount${asset[0]}`;
+            sellInput.id = `sellAmount${stock[0]}`;
             sellInput.value = 0;
             const sellButton = document.createElement('button');
             sellButton.textContent = 'Sell';
-            sellButton.onclick = () => transaction(asset[0], 'SELL',asset);
+            sellButton.onclick = () => transaction(stock[0], 'SELL',stock);
+            buyButton.style.marginRight = '10px';
             actionCell.appendChild(buyInput);
             actionCell.appendChild(buyButton);
             actionCell.appendChild(sellInput);
@@ -90,43 +91,13 @@ async function getAssets() {
     }
 }
 
-/* 
-To be embedded in html:
-<div id="assets">
-    <button onclick="toggleFormVisibility()">Add asset</button>
-</div>
-<form id="newAssetForm" style="visibility:hidden" onsubmit="newAsset()" >
-    <p>Select Asset Type</p>
-    <select id="assetType">
-        <option value="Stock" selected>Stock</option>
-        <option value="Bond">Bond</option>
-        <option value="Cash">Cash</option>
-    </select>
-    <p>Enter Asset Ticker</p><input type="text" id="assetTicker">
-    <p>Enter Asset Name</p><input type="text" id="assetName">
-    <p>Enter Amount</p><input type="text" id="amountHolding">
-    <p>Enter Maturity Date</p>
-    <input type="datetime-local" id="matureDateTime">
-    <p>Select Currency</p>
-    <select id="currency">
-        <option value="USD" selected>USD</option>
-        <option value="CAD">CAD</option>
-    </select>
-    <br><br>
-    <button type="submit">Submit</button>
-</form>
-*/
-
-async function newAsset() {
+async function newStock() {
     toggleFormVisibility();
-    const assetData = {
-        asset_type: document.getElementById("assetType").value, 
-        asset_ticker: document.getElementById("assetTicker").value,                         
-        asset_name: document.getElementById("assetName").value, 
+    const stockData = {
+        stock_ticker: document.getElementById("stockTicker").value,                         
+        stock_name: document.getElementById("stockName").value, 
         amount_holding: document.getElementById("amountHolding").value,
         buy_datetime: new Date().toISOString(),
-        mature_datetime: document.getElementById("matureDateTime").value, 
-        currency: document.getElementById("currency").value
     };
     try {
         const response = await fetch(apiUrl, {
@@ -134,7 +105,7 @@ async function newAsset() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(assetData)
+            body: JSON.stringify(stockData)
         });
         const data = await response.json();
         if (data.message) {
@@ -143,12 +114,12 @@ async function newAsset() {
             window.alert(data.error);
         }
     } catch(error) {
-        console.error('Error creating asset:', error);
+        console.error('Error creating stock:', error);
     }
 }
 
 function toggleFormVisibility() {
-    const form = document.getElementById("newAssetForm");
+    const form = document.getElementById("newStockForm");
     if (form.style.visibility == "visible") {
         form.style.visibility = "hidden";
     } else {
@@ -157,7 +128,7 @@ function toggleFormVisibility() {
     }
 }
 
-async function transaction(id, transaction_type, assetData) {
+async function transaction(id, transaction_type, stockData) {
     console.log("transaction");
     
     let transaction_amount = 0;
@@ -194,13 +165,13 @@ async function transaction(id, transaction_type, assetData) {
         const data = await response.json();
         if (data.message) {
             console.log(data.message)
-            getAssets();
+            getStocks();
             displayNetWorth();
         } else if (data.error) {
             window.alert(data.error);
         }
     } catch(error) {
-        console.error('Error buying/selling asset:', error);
+        console.error('Error buying/selling stock:', error);
     }
 }
 
