@@ -80,9 +80,7 @@ class PortfolioResource(Resource):
             mature_datetime = None
 
         currency = args["currency"].upper() if args["currency"] else None
-        # get the current networth for the portfolio
-        cursor.execute('''SELECT networth FROM historical_networth WHERE date = %s''', (buy_datetime,))
-        networth = cursor.fetchone()[0]
+        
 
         # randomly generate some price for inserting into tables
         closing_price = round(random.uniform(10, 100), 2)
@@ -92,8 +90,12 @@ class PortfolioResource(Resource):
         
         cost = amount_holding * closing_price
         
-        updated_networth = networth + cost
+        
         with get_db() as db, db.cursor() as cursor:
+            # get the current networth for the portfolio
+            cursor.execute('''SELECT networth FROM historical_networth WHERE date = %s''', (buy_datetime,))
+            networth = cursor.fetchone()[0]
+            updated_networth = networth + cost
             cursor.execute('''INSERT INTO portfolio 
                           (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency, cost)
                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''',
