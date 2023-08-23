@@ -64,14 +64,14 @@ async function getAssets() {
             buyInput.value = 0;
             const buyButton = document.createElement('button');
             buyButton.textContent = 'Buy';
-            buyButton.onclick = () => transaction(asset[0], 'BUY');
+            buyButton.onclick = () => transaction(asset[0], 'BUY',asset);
             const sellInput = document.createElement('input');
             sellInput.type = 'text';
             sellInput.id = `sellAmount${asset[0]}`;
             sellInput.value = 0;
             const sellButton = document.createElement('button');
             sellButton.textContent = 'Sell';
-            sellButton.onclick = () => transaction(asset[0], 'SELL');
+            sellButton.onclick = () => transaction(asset[0], 'SELL',asset);
             actionCell.appendChild(buyInput);
             actionCell.appendChild(buyButton);
             actionCell.appendChild(sellInput);
@@ -179,8 +179,9 @@ function toggleFormVisibility() {
     }
 }
 
-async function transaction(id, transaction_type) {
+async function transaction(id, transaction_type, assetData) {
     console.log("transaction");
+    
     let transaction_amount = 0;
     if (transaction_type == "BUY") {
         transaction_amount = document.getElementById(`buyAmount${id}`).value;
@@ -196,11 +197,20 @@ async function transaction(id, transaction_type) {
                 .catch(error => {
                     console.error('Error fetching latest price:', error);
                 });
+
+    const currentDateTime = new Date();
+
+    // Extract date and time components
+    const year = currentDateTime.getFullYear();
+    const month = String(currentDateTime.getMonth() + 1).padStart(2, '0'); // Month is 0-based
+    const day = String(currentDateTime.getDate()).padStart(2, '0');
+    const formattedDateTime = `${year}-${month}-${day} 00:00:00`;
+    
     const transactionData = {
         transaction_type: transaction_type, 
         transaction_amount: transaction_amount,
         transaction_price: transaction_price, 
-        transaction_datetime: Date(),
+        transaction_datetime: formattedDateTime,
     };
     try {
         const response = await fetch(`${apiUrl}/${id}`, {
@@ -214,12 +224,12 @@ async function transaction(id, transaction_type) {
         if (data.message) {
             window.alert(data.message)
             const assetInfoDiv = document.getElementById(`assetInfo${id}`); 
-            assetInfoDiv.innerHTML = `
-                <p><strong> ${assetData.asset_name} ${assetData.asset_ticker? 
-                assetData.asset_ticker: ""}</strong></p>
-                <p>${assetData.asset_type != "Stock"? assetData.currency : ""} 
-                ${assetData.amount_holding} ${assetData.asset_type == "Stock"? "shares" : ""}</p>
-            `
+            // assetInfoDiv.innerHTML = `
+            //     <p><strong> ${assetData[3]} ${assetData[2]? 
+            //     assetData[2]: ""}</strong></p>
+            //     <p>${assetData[1] != "Stock"? assetData[7] : ""} 
+            //     ${assetData[4]} ${assetData[1] == "Stock"? "shares" : ""}</p>
+            // `
             getAssets();
         } else if (data.error) {
             window.alert(data.error);
