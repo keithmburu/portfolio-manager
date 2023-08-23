@@ -199,13 +199,6 @@ async function transaction(id, transaction_type, assetData) {
         const data = await response.json();
         if (data.message) {
             window.alert(data.message)
-            const assetInfoDiv = document.getElementById(`assetInfo${id}`); 
-            assetInfoDiv.innerHTML = `
-                <p><strong> ${assetData.asset_name} ${assetData.asset_ticker? 
-                assetData.asset_ticker: ""}</strong></p>
-                <p>${assetData.asset_type != "Stock"? assetData.currency : ""} 
-                ${assetData.amount_holding} ${assetData.asset_type == "Stock"? "shares" : ""}</p>
-            `
             getAssets();
         } else if (data.error) {
             window.alert(data.error);
