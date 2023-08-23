@@ -3,7 +3,9 @@ const portfolioBody = document.getElementById('portfolioBody');
 const portfolioInfoElement = document.getElementById('portfolio-info');
 const networthChartElement = document.getElementById('networth-chart'); // Add an element to hold the chart
 
-document.addEventListener('DOMContentLoaded', () => {getAssets(); chartNetWorth();});
+document.addEventListener('DOMContentLoaded', () => getAssets());
+document.addEventListener('DOMContentLoaded', () => displayNetWorth());
+document.addEventListener('DOMContentLoaded', () => chartNetWorth());
 
 async function getAssets() {
     try {
@@ -53,7 +55,7 @@ async function getAssets() {
 
             // Profit
             const profitCell = document.createElement('td');
-            profitCell.textContent = `$${data.profit[asset[3]]}`;
+            profitCell.textContent = `$${data.profit[asset[3]].toFixed(2)}`;
             row.appendChild(profitCell);
 
             // Action
@@ -193,6 +195,7 @@ async function transaction(id, transaction_type, assetData) {
         if (data.message) {
             console.log(data.message)
             getAssets();
+            displayNetWorth();
         } else if (data.error) {
             window.alert(data.error);
         }
@@ -230,3 +233,30 @@ async function chartNetWorth() {
         console.error('Error fetching data:', error);
     }
 }
+async function displayNetWorth() {
+    try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        const networthContainer = document.getElementById('networth-container');
+        networthContainer.innerHTML = '';
+
+        const currentDate = new Date().toISOString().substr(0, 10);
+
+        let currentNetWorth = 0;
+        for (const entry of data.networth) {
+            entryDate = new Date(entry[1]).toISOString().substr(0, 10);
+            if (entryDate === currentDate) {
+                currentNetWorth = entry[2];
+                console.log(currentNetWorth);
+                break;
+            }
+        }
+        const networthText = document.createElement('p');
+        networthText.textContent = `Current Net Worth: $${currentNetWorth.toFixed(2)}`;
+        networthContainer.appendChild(networthText);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
+
