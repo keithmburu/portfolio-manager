@@ -6,30 +6,197 @@
         <meta name='viewport' content='width=device-width, initial-scale=1'>
         <script src='/static/index.js'></script>
     </head>
+
     <body>
-        <div id="portfolio-container"></div>
         <div id="assets">
             <button onclick="toggleFormVisibility()">Add asset</button>
+
+            
         </div>
-        <form id="newAssetForm" style="visibility:hidden" onsubmit="newAsset()" >
-            <p>Select Asset Type</p>
-            <select id="assetType">
-                <option value="Stock" selected>Stock</option>
-                <option value="Bond">Bond</option>
-                <option value="Cash">Cash</option>
-            </select>
-            <p>Enter Asset Ticker</p><input type="text" id="assetTicker">
-            <p>Enter Asset Name</p><input type="text" id="assetName">
-            <p>Enter Amount</p><input type="text" id="amountHolding">
-            <p>Enter Maturity Date</p>
-            <input type="datetime-local" id="matureDateTime">
-            <p>Select Currency</p>
-            <select id="currency">
-                <option value="USD" selected>USD</option>
-                <option value="CAD">CAD</option>
-            </select>
-            <br><br>
-            <button type="submit">Submit</button>
-        </form>
-    </body>
+
+        
+  <div class="container">
+    <h1>Portfolio</h1>
+    <div id="port-div"></div>
+  </div>
+
+  <div class="container">
+    <h2>CVS (CVS)</h2>
+    <div id="port-div"></div>
+  </div>
+  
+  <div class="container">
+    <p>Amount: 100</p>
+    <div id="amt-div"></div>
+  </div>
+
+  <div class="container">
+    <p>Profit: $168</p>
+    <div id="amt-div"></div>
+  </div>
+
+  <form>
+    <p>
+        <div class="container">
+            <label>Quantity: </label>
+        <input type="number" id="quantity" name="quantity" min="1">
+            <button type="button">Buy</button>
+            <div id="selp-div"></div>
+    </p>
+    <p>
+        <div class="container">
+            <label>Quantity: </label>
+        <input type="number" id="quantity" name="quantity" min="1">
+            <button type="button">Sell</button>
+            <div id="selp-div"></div>
+    </p>
+
+    </div>
+
+  <div class="container">
+    <h2>TESLA (TSLA)</h2>
+    <div id="port-div"></div>
+  </div>
+  
+  
+  <div class="container">
+    <p>Amount: 50</p>
+    <div id="amt-div"></div>
+  </div>
+
+  <div class="container">
+    <p>Profit: $935</p>
+    <div id="amt-div"></div>
+  </div>  
+
+  <form>
+    <p>
+        <div class="container">
+            <label>Quantity: </label>
+        <input type="number" id="quantity" name="quantity" min="1">
+            <button type="button">Buy</button>
+            <div id="selp-div"></div>
+    </p>
+    <p>
+        <div class="container">
+            <label>Quantity: </label>
+        <input type="number" id="quantity" name="quantity" min="1">
+            <button type="button">Sell</button>
+            <div id="selp-div"></div>
+    </p>
+
+    </div>
+
+  <div class="container">
+    <h2>GOOGLE (GOOG)</h2>
+    <div id="port-div"></div>
+  </div>
+  
+  <div class="container">
+    <p>Amount: 10</p>
+    <div id="amt-div"></div>
+  </div>
+
+  <div class="container">
+    <p>Profit: $93</p>
+    <div id="amt-div"></div>
+  </div>
+
+  <form>
+    <p>
+        <div class="container">
+            <label>Quantity: </label>
+        <input type="number" id="quantity" name="quantity" min="1">
+            <button type="button">Buy</button>
+            <div id="selp-div"></div>
+    </p>
+    <p>
+        <div class="container">
+            <label>Quantity: </label>
+        <input type="number" id="quantity" name="quantity" min="1">
+            <button type="button">Sell</button>
+            <div id="selp-div"></div>
+    </p>
+
+    </div>
+
+  <div class="container">
+    <h2>MORGAN STANLEY (MS)</h2>
+    <div id="port-div"></div>
+  </div>
+  
+  
+  <div class="container">
+    <p>Amount: 75</p>
+    <div id="amt-div"></div>
+  </div>
+
+  <div class="container">
+    <p>Profit: $97.50</p>
+    <div id="amt-div"></div>
+  </div>
+
+  <form>
+    <p>
+        <div class="container">
+            <label>Quantity: </label>
+        <input type="number" id="quantity" name="quantity" min="1">
+            <button type="button">Buy</button>
+            <div id="selp-div"></div>
+    </p>
+    <p>
+        <div class="container">
+            <label>Quantity: </label>
+        <input type="number" id="quantity" name="quantity" min="1">
+            <button type="button">Sell</button>
+            <div id="selp-div"></div>
+    </p>
+
+    </div>
+
+  <div class="container">
+    <h2>WALMART (WMT)</h2>
+    <div id="port-div"></div>
+  </div>
+  
+  
+  <div class="container">
+    <p>Amount: 10</p>
+    <div id="amt-div"></div>
+  </div>
+
+  <div class="container">
+    <p>Profit: $93</p>
+    <div id="amt-div"></div>
+  </div>
+
+  <form>
+    <p>
+        <div class="container">
+            <label>Quantity: </label>
+        <input type="number" id="quantity" name="quantity" min="1">
+            <button type="button">Buy</button>
+            <div id="selp-div"></div>
+    </p>
+    <p>
+        <div class="container">
+            <label>Quantity: </label>
+        <input type="number" id="quantity" name="quantity" min="1">
+            <button type="button">Sell</button>
+            <div id="selp-div"></div>
+    </p>
+
+    </div>    
+  </form>
+
+  <hr>
+
+  <div>
+    <b><h4>Historical Net Worth: $</h4></b>
+  </div>
+  
+  <script src="index.js" async defer />
+
+  </body>
+ 
 </html>
