@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
         newStock();
         // Close the form
         popUpForm.style.display = "none";
+        document.querySelectorAll('#popUpForm input').forEach(input => input.value = '');
     });
 });
 
