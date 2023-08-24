@@ -110,10 +110,13 @@ async function newStock() {
         const data = await response.json();
         if (data.message) {
             console.log(data.message);
+            getStocks();
+            displayNetWorth();
         } else if (data.error) {
             window.alert(data.error);
         }
     } catch(error) {
+        window.alert('Error creating stock:', data.error);
         console.error('Error creating stock:', error);
     }
 }
@@ -164,8 +167,6 @@ async function transaction(id, transaction_type, stockData) {
         const data = await response.json();
         if (data.message) {
             console.log(data.message)
-            getStocks();
-            displayNetWorth();
         } else if (data.error) {
             window.alert(data.error);
         }

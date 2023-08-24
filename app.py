@@ -58,6 +58,7 @@ class PortfolioResource(Resource):
         stock_name = args["stock_name"]
         amount_holding = args["amount_holding"]
 
+        
         try:
             # Parse start_datetime using dateutil.parser
             buy_datetime = dateparser.parse(args["buy_datetime"])
@@ -66,12 +67,12 @@ class PortfolioResource(Resource):
             return {"error": "Invalid buy_datetime format"}, 400
 
         # fetch the latest close price for the asset with yahoo api
-        stock = yf.Ticker(asset_ticker)
+        stock = yf.Ticker(stock_ticker)
         yahoo_buy_date = buy_datetime.strftime('%Y-%m-%d')
         next_date = buy_datetime + timedelta(days=1)
         yahoo_next_date = next_date.strftime('%Y-%m-%d')
         historical_data = stock.history(start=yahoo_buy_date, end=yahoo_next_date)
-        print(historical_data)
+        
         # Check if data is available for the target date
         if not historical_data.empty:
             closing_price = float(historical_data['Close'].values[0])
@@ -84,13 +85,19 @@ class PortfolioResource(Resource):
         
         
         with get_db() as db, db.cursor() as cursor:
+            cursor.execute('''SELECT COUNT(*) FROM portfolio WHERE stock_ticker = %s;''', (stock_ticker,))
+            count = cursor.fetchone()[0]
+            print(count)
+            if count and count > 0:
+                return ({"error": "Stock already exists"}, 400)
+            
             # get the current networth for the portfolio
             cursor.execute('''SELECT networth FROM historical_networth WHERE date = %s''', (buy_datetime,))
             networth = cursor.fetchone()[0]
             updated_networth = networth + cost
             cursor.execute('''INSERT INTO portfolio 
                           (stock_ticker, stock_name, amount_holding, buy_datetime, cost)
-                          VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''',
+                          VALUES (%s, %s, %s, %s, %s)''',
                            (stock_ticker, stock_name, amount_holding, buy_datetime, cost))
 
             # Retrieve the last inserted row's ID
@@ -100,9 +107,9 @@ class PortfolioResource(Resource):
             # create fake data for inserting into the stock_data table
             cursor.execute('''INSERT INTO  stock_data 
                            (stock_ticker, stock_name, close_price, high_price, low_price, open_price,portfolio_id,date)
-                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''',
+                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''',
                            (stock_ticker, stock_name, closing_price, high_price, low_price, open_price,portfolio_id,buy_datetime))
-            
+            db.commit()
             
             # Insert the transaction into the stock_transactions table
             cursor.execute('''INSERT INTO stock_transactions 

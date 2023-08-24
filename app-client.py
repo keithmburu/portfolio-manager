@@ -11,21 +11,18 @@ def print_response(response):
 # print_response(res)
 
 # Create(i.e.) Buy new asset
-res = post("http://localhost:5000/portfolio", json={"asset_type": 'stock' , "asset_ticker": "AAPL",
-                                           "asset_name": 'Apple Inc.', "amount_holding": 10,
-                                            "buy_datetime": '2023-08-17 12:46:00',
-                                           "mature_datetime": '2028-08-17 12:46:00', "currency": 'USD'})
+res = post("http://localhost:5000/portfolio", json={"stock_ticker":"AAPL", "stock_name":"Apple Inc.", "amount_holding":"100","buy_datetime":"2023-08-17 12:46:00"})
 print_response(res)
 
-# if res.status_code == 201 and "Location" in res.headers:
-#     URI = res.headers["Location"]
-#     portfolio_id = int(URI.split('/')[-1])
-# else:
-#         exit()
+if res.status_code == 201 and "Location" in res.headers:
+    URI = res.headers["Location"]
+    portfolio_id = int(URI.split('/')[-1])
+else:
+        exit()
 
 # portfolio_id = 5
-# res = get(f"http://localhost:5000/{portfolio_id}")
-# print_response(res)
+res = get(f"http://localhost:5000/portfolio/{portfolio_id}")
+print_response(res)
 
 # # Buy action
 # res = put(f"http://localhost:5000/{portfolio_id}", json={"transaction_type":"BUY",
