@@ -40,6 +40,7 @@ class PortfolioResource(Resource):
             
             cursor.execute('''SELECT * FROM historical_networth''')
             networth = cursor.fetchall()
+            cursor.close()
         
         return jsonify({"portfolio": portfolio, "networth": networth, "profit": profit})
 
@@ -81,32 +82,48 @@ class PortfolioResource(Resource):
         
         cost = amount_holding * closing_price
         
-        
+        # flag for re-adding existing stocks
+        reAdd = False
         with get_db() as db, db.cursor() as cursor:
             cursor.execute('''SELECT COUNT(*) FROM portfolio WHERE stock_ticker = %s;''', (stock_ticker,))
             count = cursor.fetchone()[0]
-            print(count)
             if count and count > 0:
-                return ({"error": "Stock already exists"}, 400)
+                cursor.execute('''SELECT amount_holding FROM portfolio WHERE stock_ticker = %s;''', (stock_ticker,))
+                amount = cursor.fetchone()[0]
+                if amount != 0:
+                    return ({"error": f"Stock already exists, amount holding {amount}"}, 400)
+                else:
+                    reAdd = True
             
             # get the current networth for the portfolio
             cursor.execute('''SELECT networth FROM historical_networth WHERE date = %s''', (buy_datetime,))
             networth = cursor.fetchone()[0]
             updated_networth = networth + cost
-            cursor.execute('''INSERT INTO portfolio 
-                          (stock_ticker, stock_name, amount_holding, buy_datetime, cost)
-                          VALUES (%s, %s, %s, %s, %s)''',
-                           (stock_ticker, stock_name, amount_holding, buy_datetime, cost))
+            if reAdd:
+                # Fetch the portfolio_id before updating
+                cursor.execute('''SELECT id FROM portfolio WHERE stock_ticker = %s;''', (stock_ticker,))
+                portfolio_id = cursor.fetchone()[0]
+                
+                cursor.execute('''UPDATE portfolio 
+                  SET amount_holding = %s, buy_datetime = %s, cost = %s
+                  WHERE stock_ticker = %s''',
+               (amount_holding, buy_datetime, cost, stock_ticker))
+                db.commit()
+            else:    
+                cursor.execute('''INSERT INTO portfolio 
+                            (stock_ticker, stock_name, amount_holding, buy_datetime, cost)
+                            VALUES (%s, %s, %s, %s, %s)''',
+                            (stock_ticker, stock_name, amount_holding, buy_datetime, cost))
 
-            # Retrieve the last inserted row's ID
-            portfolio_id = cursor.lastrowid
-            db.commit()
-            
+                # Retrieve the last inserted row's ID
+                portfolio_id = cursor.lastrowid
+                db.commit()
+                
             # create fake data for inserting into the stock_data table
             cursor.execute('''INSERT INTO  stock_data 
-                           (stock_ticker, stock_name, close_price, high_price, low_price, open_price,portfolio_id,date)
-                           VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''',
-                           (stock_ticker, stock_name, closing_price, high_price, low_price, open_price,portfolio_id,buy_datetime))
+                        (stock_ticker, stock_name, close_price, high_price, low_price, open_price,portfolio_id,date)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''',
+                        (stock_ticker, stock_name, closing_price, high_price, low_price, open_price,portfolio_id,buy_datetime))
             db.commit()
             
             # Insert the transaction into the stock_transactions table
@@ -120,6 +137,8 @@ class PortfolioResource(Resource):
             cursor.execute('''UPDATE historical_networth SET networth=%s WHERE date=%s''',
                            (updated_networth, buy_datetime))
             db.commit()
+            cursor.close()
+            
         resource_url = api.url_for(AssetResource, portfolio_id=portfolio_id, _external=True)
         insert_ok = ({"message": "Added new stock to portfolio"}, 201, {"Location": f"{resource_url}"})
         insert_failed = ({"error": "Failed to add new stock to portfolio"}, 400)
@@ -135,7 +154,10 @@ class AssetResource(Resource):
             cursor.execute('''SELECT * FROM portfolio WHERE id = %s''', (portfolio_id,))
             portfolio = cursor.fetchone()
             cursor.execute('''SELECT close_price FROM stock_data WHERE portfolio_id = %s ORDER BY DATEDIFF(date, %s) ASC LIMIT 1''', (portfolio_id, datetime.now()))
-            nearest_price = cursor.fetchone()[0]
+            nearest_price = cursor.fetchall()
+            nearest_price = nearest_price[0][0]
+            cursor.close()
+            
 
         return jsonify({"portfolio":portfolio, "stocks":stock,"transactions": transactions,"nearest_price":nearest_price})
 
@@ -181,7 +203,10 @@ class AssetResource(Resource):
                 else:
                     # Calculate and update new amount holding
                     updated_amount_holding = current_amount_holding - transaction_amount
-                    updated_cost = cost - transaction_amount * action_price
+                    if updated_amount_holding == 0:
+                        updated_cost = 0
+                    else:
+                        updated_cost = cost - transaction_amount * action_price
                     updated_networth = networth - transaction_amount * action_price
 
             # Insert the transaction into the stock_transactions table
@@ -199,6 +224,8 @@ class AssetResource(Resource):
             cursor.execute('''UPDATE historical_networth SET networth=%s WHERE date=%s''',
                            (updated_networth, transaction_datetime))
             db.commit()
+            
+            cursor.close()
                            
 
             # Return a response indicating success
