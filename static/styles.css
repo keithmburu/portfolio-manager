@@ -44,7 +44,7 @@ body {
 
 #networth-chart-div {
   margin: 0 auto;
-  width: 70%;
+  width: 50%;
 }
 
 /* Apply styles to the table */
@@ -59,13 +59,13 @@ body {
   .custom-table th {
     background-color: #f2f2f2;
     text-align: left;
-    padding: 10px;
+    padding: 6px;
     border: 1px solid #ccc;
   }
   
   /* Style table data cells */
   .custom-table td {
-    padding: 10px;
+    padding: 5px;
     border: 1px solid #ccc;
   }
   
