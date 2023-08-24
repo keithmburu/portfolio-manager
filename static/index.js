@@ -50,12 +50,13 @@ async function getStocks() {
 
             // Cost
             const costCell = document.createElement('td');
-            costCell.textContent = `$${stock[6]}`;
+            costCell.textContent = `$${stock[6].toLocaleString()}`;
             row.appendChild(costCell);
 
             // Profit
             const profitCell = document.createElement('td');
-            profitCell.textContent = `$${data.profit[stock[2]].toFixed(2)}`;
+            profitCell.textContent = `$${data.profit[stock[2]].toFixed(2).toLocaleString()}`;
+            profitCell.style.color = data.profit[stock[2]] >= 0 ? 'green' : 'red';
             row.appendChild(profitCell);
 
             // Action
@@ -63,25 +64,26 @@ async function getStocks() {
             const buyInput = document.createElement('input');
             buyInput.type = 'text';
             buyInput.id = `buyAmount${stock[0]}`;
-            //buyInput.value = 0;
             buyInput.placeholder = 'Enter buy amount';
             buyInput.style.marginRight = '5px';
             const buyButton = document.createElement('button');
+            buyButton.classList.add("buy");
             buyButton.textContent = 'Buy';
             buyButton.onclick = () => transaction(stock[0], 'BUY',stock);
             const sellInput = document.createElement('input');
             sellInput.type = 'text';
             sellInput.id = `sellAmount${stock[0]}`;
-            //sellInput.value = 0;
             sellInput.placeholder = 'Enter sell amount';
             sellInput.style.marginRight = '5px';
             const sellButton = document.createElement('button');
+            sellButton.classList.add("sell");
             sellButton.textContent = 'Sell';
             sellButton.onclick = () => transaction(stock[0], 'SELL',stock);
             buyButton.style.marginRight = '10px';
 
             // create a button that delete the stock
             const deleteButton = document.createElement('button');
+            deleteButton.classList.add("delete");
             deleteButton.textContent = 'Delete';
             deleteButton.onclick = () => deleteStock(stock[0], stock[3]);
             sellButton.style.marginRight = '10px';
@@ -285,7 +287,7 @@ async function displayNetWorth() {
             }
         }
         const networthText = document.createElement('p');
-        networthText.textContent = `Current Net Worth: $${currentNetWorth.toFixed(2)}`;
+        networthText.textContent = `Current Net Worth: $${currentNetWorth.toFixed(2).toLocaleString()}`;
         networthContainer.appendChild(networthText);
     } catch (error) {
         console.error('Error fetching data:', error);
