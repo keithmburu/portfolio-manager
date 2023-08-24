@@ -9,14 +9,9 @@
         <link rel="icon" href="/docs/4.0/assets/img/favicons/favicon.ico">
     
         <title>Portfolio</title>
-    
-        <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/dashboard/">
-    
-        <!-- Bootstrap core CSS -->
-        <link href="bootstrap.min.css" rel="stylesheet">
-    
-        <!-- Custom styles for this template -->
-        <link href="dashboard.css" rel="stylesheet">
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css">
+
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.3/dist/chart.umd.min.js"></script>
         <script src='/static/index.js'></script>
 
@@ -33,19 +28,19 @@
 
     <body>
 
-        <div style="width: 70%;">
+        <div id="networth-chart-div">
           <canvas id="networth-chart"></canvas>
         </div>
         <div id="portfolio-container"></div>
         <div id="networth-container"></div>
-        <button onclick="toggleFormVisibility()">Add new stock to portfolio</button>
+        <button class="btn btn-primary w-100 m-5" onclick="toggleFormVisibility()">Add new stock to portfolio</button>
         
         <form id="newStockForm" style="visibility:hidden" onsubmit="return submitForm();">
             <p>Enter Stock Ticker</p><input type="text" id="stockTicker">
             <p>Enter Stock Name</p><input type="text" id="stockName">
             <p>Enter Amount</p><input type="text" id="amountHolding">
             <br><br>
-            <button type="submit">Submit</button>
+            <button class="btn btn-primary w-100" type="submit">Submit</button>
         </form>
 
   <div class="container">
