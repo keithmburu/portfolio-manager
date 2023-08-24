@@ -18,7 +18,7 @@
         <div id="networth-container"></div>
         <button onclick="toggleFormVisibility()">Add new stock to portfolio</button>
         
-        <form id="newStockForm" style="visibility:hidden" onsubmit="newStock()" >
+        <form id="newStockForm" style="visibility:hidden" onsubmit="return submitForm();">
             <p>Enter Stock Ticker</p><input type="text" id="stockTicker">
             <p>Enter Stock Name</p><input type="text" id="stockName">
             <p>Enter Amount</p><input type="text" id="amountHolding">

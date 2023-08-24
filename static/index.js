@@ -104,6 +104,12 @@ async function getStocks() {
     }
 }
 
+function submitForm() {
+    newStock(); // Call your function to handle form submission
+    return false; // Prevent the default form submission behavior
+}
+
+
 // delete a stock from the portfolio by sell all the stock
 async function deleteStock(id,amount_holding) {
     let transaction_price = await fetch(`${apiUrl}/${id}`)
@@ -152,6 +158,7 @@ async function newStock() {
         buy_datetime: new Date().toISOString(),
     };
     try {
+        console.log('adding stock ${apiUrl}', stockData);
         const response = await fetch(apiUrl, {
             method: 'POST',
             headers: {
@@ -159,7 +166,9 @@ async function newStock() {
             },
             body: JSON.stringify(stockData)
         });
+        console.log('added stock response', response);
         const data = await response.json();
+        console.log('added stock data',data);
         if (data.message) {
             console.log(data.message);
             getStocks();
