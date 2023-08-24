@@ -75,10 +75,19 @@ async function getStocks() {
             sellButton.textContent = 'Sell';
             sellButton.onclick = () => transaction(stock[0], 'SELL',stock);
             buyButton.style.marginRight = '10px';
+
+            // create a button that delete the stock
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.onclick = () => deleteStock(stock[0], stock[3]);
+            sellButton.style.marginRight = '10px';
+
+
             actionCell.appendChild(buyInput);
             actionCell.appendChild(buyButton);
             actionCell.appendChild(sellInput);
             actionCell.appendChild(sellButton);
+            actionCell.appendChild(deleteButton);
             row.appendChild(actionCell);
 
             table.appendChild(row);
@@ -88,6 +97,45 @@ async function getStocks() {
         portfolioContainer.appendChild(table);
     } catch (error) {
         console.error('Error fetching data:', error);
+    }
+}
+
+// delete a stock from the portfolio by sell all the stock
+async function deleteStock(id,amount_holding) {
+    let transaction_price = await fetch(`${apiUrl}/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Latest Price:', data.nearest_price);
+                    return data.nearest_price;
+                })
+                .catch(error => {
+                    console.error('Error fetching latest price:', error);
+                });
+    const currentDateTime = new Date().toISOString();
+    const transactionData = {
+        transaction_type: "SELL", 
+        transaction_amount: amount_holding,
+        transaction_price: transaction_price, 
+        transaction_datetime: currentDateTime,
+    };
+    try {
+        const response = await fetch(`${apiUrl}/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(transactionData)
+        });
+        const data = await response.json();
+        if (data.message) {
+            console.log(data.message);
+            getStocks();
+            displayNetWorth();
+        } else if (data.error) {
+            window.alert(data.error);
+        }
+    } catch(error) {
+        console.error('Error remove stock:', error);
     }
 }
 
