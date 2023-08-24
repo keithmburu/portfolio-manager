@@ -121,6 +121,7 @@ async function deleteStock(id,amount_holding) {
                 .catch(error => {
                     console.error('Error fetching latest price:', error);
                 });
+                
     const currentDateTime = new Date().toISOString();
     const transactionData = {
         transaction_type: "SELL", 
