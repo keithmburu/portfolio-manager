@@ -50,12 +50,16 @@ async function getStocks() {
 
             // Cost
             const costCell = document.createElement('td');
-            costCell.textContent = `$${stock[6].toLocaleString()}`;
+            let costString = stock[6].toLocaleString(undefined, 
+                {style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2});
+            costCell.textContent = `${costString}`;
             row.appendChild(costCell);
 
             // Profit
             const profitCell = document.createElement('td');
-            profitCell.textContent = `$${data.profit[stock[2]].toFixed(2).toLocaleString()}`;
+            let profitString = data.profit[stock[2]].toLocaleString(undefined, 
+                {style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2});
+            profitCell.textContent = `${profitString}`;
             profitCell.style.color = data.profit[stock[2]] >= 0 ? 'green' : 'red';
             row.appendChild(profitCell);
 
@@ -84,7 +88,7 @@ async function getStocks() {
             // create a button that delete the stock
             const deleteButton = document.createElement('button');
             deleteButton.classList.add("delete");
-            deleteButton.textContent = 'Delete';
+            deleteButton.textContent = 'Liquidate';
             deleteButton.onclick = () => deleteStock(stock[0], stock[3]);
             sellButton.style.marginRight = '10px';
 
@@ -287,7 +291,9 @@ async function displayNetWorth() {
             }
         }
         const networthText = document.createElement('p');
-        networthText.textContent = `Current Net Worth: $${currentNetWorth.toFixed(2).toLocaleString()}`;
+        let currentNetWorthString = currentNetWorth.toLocaleString(undefined, 
+            {style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2});
+        networthText.textContent = `Current Net Worth: ${currentNetWorthString}`;
         networthContainer.appendChild(networthText);
     } catch (error) {
         console.error('Error fetching data:', error);
