@@ -75,7 +75,7 @@ async function getStocks() {
 
             // Amount Holding
             const amountHoldingCell = document.createElement('td');
-            amountHoldingCell.textContent = stock[3];
+            amountHoldingCell.textContent = `${stock[3]} shares`;
             row.appendChild(amountHoldingCell);
 
             // Cost
