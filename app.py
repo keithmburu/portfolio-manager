@@ -1,4 +1,3 @@
-import random
 from dateutil import parser as dateparser
 from flask import Flask, jsonify, send_from_directory
 from flask_restful import Resource, Api, reqparse
@@ -6,7 +5,6 @@ import mysql.connector
 from flask_cors import CORS 
 from datetime import datetime, timedelta
 import yfinance as yf
-from decimal import Decimal
 
 app = Flask(__name__)
 api = Api(app)
