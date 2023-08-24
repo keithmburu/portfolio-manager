@@ -6,19 +6,23 @@ USE TAPHK;
 
 CREATE TABLE portfolio (
     id INT PRIMARY KEY auto_increment,
-    stock_ticker VARCHAR(20),
-    stock_name VARCHAR(255) NOT NULL,
+    asset_type VARCHAR(255) NOT NULL,
+    asset_ticker VARCHAR(20),
+    asset_name VARCHAR(255) NOT NULL,
     amount_holding INT NOT NULL,
     buy_datetime DATETIME NOT NULL,
+    mature_datetime DATETIME,
+    currency VARCHAR(255),
     performance FLOAT,
     cost FLOAT NOT NULL
 );
 
 
-CREATE TABLE stock_data (
+CREATE TABLE asset_data (
     id INT PRIMARY KEY auto_increment,
-    stock_ticker VARCHAR(20),
-    stock_name VARCHAR(255) NOT NULL,
+    asset_type VARCHAR(255) NOT NULL,
+    asset_ticker VARCHAR(20),
+    asset_name VARCHAR(255) NOT NULL,
     date DATETIME NOT NULL,
     open_price FLOAT,
     close_price FLOAT,
@@ -34,55 +38,55 @@ CREATE TABLE historical_networth (
     networth FLOAT NOT NULL
 );
 
-CREATE TABLE stock_transactions (
+CREATE TABLE asset_transactions (
     id INT PRIMARY KEY auto_increment,
-    stock_id INT,
+    asset_id INT,
     transaction_type ENUM('BUY', 'SELL') NOT NULL,
     transaction_datetime DATETIME NOT NULL,
     transaction_amount INT NOT NULL,
     transaction_price FLOAT NOT NULL,
-    FOREIGN KEY (stock_id) REFERENCES portfolio(id)
+    FOREIGN KEY (asset_id) REFERENCES portfolio(id)
 );
 
 -- Insert into the portfolio table
 -- Insert TESLA stock data
-INSERT INTO portfolio (stock_ticker, stock_name, amount_holding, buy_datetime, performance,cost)
-VALUES ('CVS', 'CVS Health Corporation', 100, '2023-08-11 00:00:00', NULL,8112),
-        ('TSLA', 'Tesla, Inc.', 50, '2023-08-11 00:00:00', NULL,35840),
-       ('GOOGL', 'Alphabet Inc.', 30, '2023-08-11 00:00:00', NULL, 3936),
-       ('MS', 'Morgan Stanley', 75, '2023-08-11 00:00:00', NULL,7282.5),
-       ('WMT', 'Walmart Inc.', 40, '2023-08-11 00:00:00', NULL,5648);
+INSERT INTO portfolio (asset_type, asset_ticker, asset_name, amount_holding, buy_datetime, mature_datetime, currency,performance,cost)
+VALUES ('Stock', 'CVS', 'CVS Health Corporation', 100, '2023-08-11 00:00:00', NULL, 'USD', NULL,8112),
+        ('Stock', 'TSLA', 'Tesla, Inc.', 50, '2023-08-11 00:00:00', NULL, 'USD', NULL,35840),
+       ('Stock', 'GOOGL', 'Alphabet Inc.', 30, '2023-08-11 00:00:00', NULL, 'USD', NULL, 3936),
+       ('Stock', 'MS', 'Morgan Stanley', 75, '2023-08-11 00:00:00', NULL, 'USD', NULL,7282.5),
+       ('Stock', 'WMT', 'Walmart Inc.', 40, '2023-08-11 00:00:00', NULL, 'USD', NULL,5648);
 
 -- Display the portfolio table
 SELECT * FROM portfolio;
 
--- Insert all the buy actions into the stock_transaction table
-INSERT INTO stock_transactions (stock_id, transaction_type, transaction_datetime,transaction_amount, transaction_price)
+-- Insert all the buy actions into the asset_transaction table
+INSERT INTO asset_transactions (asset_id, transaction_type, transaction_datetime,transaction_amount, transaction_price)
     VALUES (1, 'BUY', '2023-08-11 00:00:00',100, 81.12),
             (2, 'BUY', '2023-08-11 00:00:00',50, 716.80),
             (3, 'BUY', '2023-08-11 00:00:00',30, 131.20),
             (4, 'BUY', '2023-08-11 00:00:00',75,97.10),
             (5, 'BUY', '2023-08-11 00:00:00',40,141.20);
 -- Display the portfolio table
-SELECT * FROM stock_transactions;
+SELECT * FROM asset_transactions;
 
--- Insert into the stock_data table
--- Insert CVS stock data
-INSERT INTO stock_data (stock_ticker, stock_name, date, open_price, close_price, high_price, low_price,portfolio_id)
+-- Insert into the asset_data table
+-- Insert CVS asset data
+INSERT INTO asset_data (asset_type, asset_ticker, asset_name, date, open_price, close_price, high_price, low_price,portfolio_id)
 VALUES 
-    ('CVS', 'CVS Health Corporation', '2023-08-11 00:00:00', 80.25, 81.12, 82.18, 80.10,1),
-    ('CVS', 'CVS Health Corporation', '2023-08-12 00:00:00', 81.50, 82.30, 83.45, 81.30,1),
-    ('CVS', 'CVS Health Corporation', '2023-08-13 00:00:00', 82.40, 82.80, 83.90, 82.00,1),
-    ('CVS', 'CVS Health Corporation', '2023-08-14 00:00:00', 82.70, 82.60, 83.20, 82.40,1),
-    ('CVS', 'CVS Health Corporation', '2023-08-15 00:00:00', 82.50, 82.80, 83.10, 82.30,1),
-    ('CVS', 'CVS Health Corporation', '2023-08-16 00:00:00', 82.70, 82.90, 83.30, 82.50,1),
-    ('CVS', 'CVS Health Corporation', '2023-08-17 00:00:00', 82.80, 82.75, 83.00, 82.60,1),
-    ('CVS', 'CVS Health Corporation', '2023-08-18 00:00:00', 80.25, 81.12, 82.18, 80.10, 1),
-    ('CVS', 'CVS Health Corporation', '2023-08-21 00:00:00', 80.25, 81.12, 82.18, 80.10, 1),
-    ('CVS', 'CVS Health Corporation', '2023-08-22 00:00:00', 81.50, 82.30, 83.45, 81.30, 1),
-    ('CVS', 'CVS Health Corporation', '2023-08-23 00:00:00', 82.40, 82.80, 83.90, 82.00, 1),
-    ('CVS', 'CVS Health Corporation', '2023-08-24 00:00:00', 82.70, 82.60, 83.20, 82.40, 1),
-    ('CVS', 'CVS Health Corporation', '2023-08-25 00:00:00', 82.50, 82.80, 83.10, 82.30, 1);
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-11 00:00:00', 80.25, 81.12, 82.18, 80.10,1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-12 00:00:00', 81.50, 82.30, 83.45, 81.30,1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-13 00:00:00', 82.40, 82.80, 83.90, 82.00,1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-14 00:00:00', 82.70, 82.60, 83.20, 82.40,1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-15 00:00:00', 82.50, 82.80, 83.10, 82.30,1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-16 00:00:00', 82.70, 82.90, 83.30, 82.50,1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-17 00:00:00', 82.80, 82.75, 83.00, 82.60,1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-18 00:00:00', 80.25, 81.12, 82.18, 80.10, 1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-21 00:00:00', 80.25, 81.12, 82.18, 80.10, 1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-22 00:00:00', 81.50, 82.30, 83.45, 81.30, 1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-23 00:00:00', 82.40, 82.80, 83.90, 82.00, 1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-24 00:00:00', 82.70, 82.60, 83.20, 82.40, 1),
+    ('Stock', 'CVS', 'CVS Health Corporation', '2023-08-25 00:00:00', 82.50, 82.80, 83.10, 82.30, 1);
 
 -- Insert TESLA stock data
 INSERT INTO stock_data (stock_ticker, stock_name, date, open_price, close_price, high_price, low_price,portfolio_id)
@@ -149,14 +153,14 @@ VALUES ('WMT', 'Walmart Inc.', '2023-08-11 00:00:00', 140.50, 141.20, 141.80, 14
     ('WMT', 'Walmart Inc.', '2023-08-24 00:00:00', 142.30, 142.60, 142.90, 142.10, 5),
     ('WMT', 'Walmart Inc.', '2023-08-25 00:00:00', 142.70, 143.00, 143.40, 142.50, 5);
 
--- Display the stock_data table
-SELECT * FROM stock_data;
+-- Display the asset_data table
+SELECT * FROM asset_data;
 
 -- Calculate and insert historical net worth
 INSERT INTO historical_networth (date, networth)
 SELECT ad.date, SUM(p.amount_holding * ad.close_price) AS networth
-FROM stock_data ad
-JOIN portfolio p ON ad.stock_name = p.stock_name
+FROM asset_data ad
+JOIN portfolio p ON ad.asset_name = p.asset_name
 GROUP BY ad.date;
 
 -- The calculated net worth and performance is based on the historical data
@@ -165,24 +169,24 @@ GROUP BY ad.date;
 -- Display the calculated historical net worth
 SELECT * FROM historical_networth;
 
--- calculate the performance of each stock in the portfolio
+-- calculate the performance of each asset in the portfolio
 UPDATE portfolio p
 JOIN (
     SELECT 
-        ad.stock_name, 
+        ad.asset_name, 
         ((ad.close_price - ad.buy_price) / ad.buy_price) * 100 AS performance
     FROM (
         SELECT 
-            p.stock_name, 
+            p.asset_name, 
             p.buy_datetime,
             ad.close_price,
-            (SELECT open_price FROM stock_data WHERE stock_name = p.stock_name AND date = p.buy_datetime) AS buy_price
+            (SELECT open_price FROM asset_data WHERE asset_name = p.asset_name AND date = p.buy_datetime) AS buy_price
         FROM portfolio p
-        JOIN stock_data ad ON p.stock_name = ad.stock_name
-        WHERE ad.date = (SELECT MAX(date) FROM stock_data WHERE stock_name = p.stock_name)
+        JOIN asset_data ad ON p.asset_name = ad.asset_name
+        WHERE ad.date = (SELECT MAX(date) FROM asset_data WHERE asset_name = p.asset_name)
     ) AS ad
-) AS stock_performance ON p.stock_name = stock_performance.stock_name
-SET p.performance = stock_performance.performance;
+) AS asset_performance ON p.asset_name = asset_performance.asset_name
+SET p.performance = asset_performance.performance;
 
 
 -- Display the updated portfolio table
