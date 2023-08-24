@@ -49,7 +49,7 @@ CREATE TABLE stock_transactions (
 INSERT INTO portfolio (stock_ticker, stock_name, amount_holding, buy_datetime, performance,cost)
 VALUES ('CVS', 'CVS Health Corporation', 100, '2023-08-11 00:00:00', NULL,8112),
         ('TSLA', 'Tesla, Inc.', 50, '2023-08-11 00:00:00', NULL,35840),
-       ('GOOGL', 'Alphabet Inc.', 30, '2023-08-11 00:00:00', NULL, 3936),
+       ('GOOG', 'Alphabet Inc.', 30, '2023-08-11 00:00:00', NULL, 3936),
        ('MS', 'Morgan Stanley', 75, '2023-08-11 00:00:00', NULL,7282.5),
        ('WMT', 'Walmart Inc.', 40, '2023-08-11 00:00:00', NULL,5648);
 
