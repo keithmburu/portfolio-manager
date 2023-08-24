@@ -229,7 +229,7 @@ async function transaction(id, transaction_type, stockData) {
         });
         const data = await response.json();
         if (data.message) {
-            console.log(data.message)
+            console.log(data.message);
             getStocks();
             displayNetWorth();
         } else if (data.error) {
@@ -293,4 +293,3 @@ async function displayNetWorth() {
         console.error('Error fetching data:', error);
     }
 }
-

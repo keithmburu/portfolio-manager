@@ -239,6 +239,9 @@ class AssetResource(Resource):
  
 api.add_resource(HomeResource, '/')   
 api.add_resource(PortfolioResource, '/portfolio')
+# api.add_resource(StocksResource, '/stocks')
+# api.add_resource(BondsResource, '/bonds')
+# api.add_resource(CashResource, '/cash')
 api.add_resource(AssetResource, '/portfolio/<int:portfolio_id>')
 
 
