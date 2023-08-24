@@ -17,6 +17,7 @@
     
         <!-- Custom styles for this template -->
         <link href="dashboard.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.3/dist/chart.umd.min.js"></script>
         <script src='/static/index.js'></script>
 
         <style>
@@ -31,33 +32,20 @@
 
     <body>
 
+        <div style="width: 50%;">
+          <canvas id="networth-chart"></canvas>
+        </div>
         <div id="portfolio-container"></div>
         <div id="networth-container"></div>
+        <button onclick="toggleFormVisibility()">Add new stock to portfolio</button>
         
-        <div id="assets">
-          <button onclick="toggleFormVisibility()">Add asset</button>
-        </div>
-        <form id="newAssetForm" style="visibility:hidden" onsubmit="newAsset()" >
-            <p>Select Asset Type</p>
-            <select id="assetType">
-                <option value="Stock" selected>Stock</option>
-                <option value="Bond">Bond</option>
-                <option value="Cash">Cash</option>
-            </select>
-            <p>Enter Asset Ticker</p><input type="text" id="assetTicker">
-            <p>Enter Asset Name</p><input type="text" id="assetName">
+        <form id="newStockForm" style="visibility:hidden" onsubmit="newStock()" >
+            <p>Enter Stock Ticker</p><input type="text" id="stockTicker">
+            <p>Enter Stock Name</p><input type="text" id="stockName">
             <p>Enter Amount</p><input type="text" id="amountHolding">
-            <p>Enter Maturity Date</p>
-            <input type="datetime-local" id="matureDateTime">
-            <p>Select Currency</p>
-            <select id="currency">
-                <option value="USD" selected>USD</option>
-                <option value="CAD">CAD</option>
-            </select>
             <br><br>
             <button type="submit">Submit</button>
         </form>
-
 
   <div class="container">
     <h1>Portfolio</h1>
