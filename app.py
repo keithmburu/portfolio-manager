@@ -47,7 +47,7 @@ class PortfolioResource(Resource):
 
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument("stock_ticker")
+        parser.add_argument("stock_ticker", required=True)
         parser.add_argument("stock_name", required=True)
         parser.add_argument("amount_holding", required=True, type=int)
         parser.add_argument("buy_datetime", required=True)
@@ -78,7 +78,8 @@ class PortfolioResource(Resource):
             high_price = float(historical_data['High'].values[0])
             low_price = float(historical_data['Low'].values[0])
             open_price = float(historical_data['Open'].values[0])
-
+        else:
+            return ({"error": "No data available for the given stock"}, 400)
         
         cost = amount_holding * closing_price
         
