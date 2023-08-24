@@ -7,6 +7,35 @@ document.addEventListener('DOMContentLoaded', () => getStocks());
 document.addEventListener('DOMContentLoaded', () => displayNetWorth());
 document.addEventListener('DOMContentLoaded', () => chartNetWorth());
 
+document.addEventListener("DOMContentLoaded", () => {
+    const openFormButton = document.getElementById("openFormButton");
+    const popUpForm = document.getElementById("popUpForm");
+    const closeBtn = document.querySelector(".close");
+    
+    openFormButton.addEventListener("click", () => {
+        popUpForm.style.display = "block";
+    });
+    
+    closeBtn.addEventListener("click", () => {
+        popUpForm.style.display = "none";
+    });
+    
+    window.addEventListener("click", (event) => {
+        if (event.target === popUpForm) {
+            popUpForm.style.display = "none";
+        }
+    });
+
+    const form = document.getElementById("myForm");
+    form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        newStock();
+        // Close the form
+        popUpForm.style.display = "none";
+    });
+});
+
+
 async function getStocks() {
     try {
         // Fetch portfolio data from the backend
@@ -157,7 +186,6 @@ async function deleteStock(id,amount_holding) {
 }
 
 async function newStock() {
-    toggleFormVisibility();
     const stockData = {
         stock_ticker: document.getElementById("stockTicker").value,                         
         stock_name: document.getElementById("stockName").value, 
@@ -189,14 +217,6 @@ async function newStock() {
     }
 }
 
-function toggleFormVisibility() {
-    const form = document.getElementById("newStockForm");
-    if (form.style.visibility == "visible") {
-        form.style.visibility = "hidden";
-    } else {
-        form.style.visibility = "visible";
-    }
-}
 
 async function transaction(id, transaction_type, stockData) {
     console.log("transaction");
