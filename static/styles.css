@@ -20,16 +20,36 @@
     border: 1px solid #ccc;
   }
   
-  /* Style buy and sell buttons */
+  /* Style buy, sell, and delete buttons */
   .custom-table button {
-    background-color: #4CAF50;
     color: white;
     border: none;
     padding: 5px 10px;
     cursor: pointer;
   }
-  
-  .custom-table button:hover {
-    background-color: #45a049;
+
+  .custom-table button.buy {
+    background-color: #018605;
   }
+
+  .custom-table button.buy:hover {
+    background-color: #008905c1;
+  }
+
+  .custom-table button.sell {
+    background-color: #820a02;
+  }
+
+  .custom-table button.sell:hover {
+    background-color: #8e0a01c2;
+  }
+
+  .custom-table button.delete {
+    background-color: #000486fb;
+  }
+
+  .custom-table button.delete:hover {
+    background-color: #010584b1;
+  }
+  
   
