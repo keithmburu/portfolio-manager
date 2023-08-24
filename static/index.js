@@ -287,12 +287,34 @@ async function chartNetWorth() {
             },
             options: {
                 responsive: true,
-            }       
+                tooltips: {
+                  callbacks: {
+                    label: function(tooltipItem, data) {
+                      let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                      return value.toLocaleString(undefined, 
+                        {style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2});
+                    }
+                  }
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            userCallback:
+                                function(value, index, values) {
+                                    return value.toLocaleString(undefined, 
+                                    {style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2});
+                                }
+                        }
+                    }]
+                }
+            }
         });
     } catch(error) {
         console.error('Error fetching data:', error);
     }
 }
+
 async function displayNetWorth() {
     try {
         const response = await fetch(apiUrl);
